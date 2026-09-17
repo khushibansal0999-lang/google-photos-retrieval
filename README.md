@@ -2,6 +2,11 @@
 
 Goal: increase the % of users who successfully retrieve a photo they remember but cannot precisely describe.
 
+## Links
+- **Discovery engine (live):** https://app-photos-retrieval-qvlu7ymwqfadwg3siqnqjb.streamlit.app/
+- **Repo:** https://github.com/khushibansal0999-lang/google-photos-retrieval
+- MVP (live): _coming_
+
 ## Structure
 - `discovery-engine/` — Part 1. Scrape → Claude structured extraction → SQLite → Streamlit query UI
   - `data/raw/` scraped JSON (Reddit, Play Store, App Store, YouTube, support forums)
