@@ -216,6 +216,8 @@ if section == "Ask the evidence":
                 "What workarounds do parents use to find kids' photos?"]
     question = st.text_area("Question", placeholder=examples[0])
     st.caption("Try: " + " · ".join(f"_{e}_" for e in examples))
+    if not os.environ.get("GEMINI_API_KEY"):
+        st.error("The AI answer step needs a Gemini API key. On Streamlit Cloud: **Manage app → Settings → Secrets** and add `GEMINI_API_KEY = \"your key\"`. The Overview/Explore/Compare sections work without it.")
     if st.button("Ask", type="primary") and question.strip():
         FILTER_SCHEMA = {
             "type": "object",

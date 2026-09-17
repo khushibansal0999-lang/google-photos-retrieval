@@ -20,7 +20,10 @@ _client = None
 def client():
     global _client
     if _client is None:
-        _client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+        key = os.environ.get("GEMINI_API_KEY")
+        if not key:
+            raise RuntimeError("GEMINI_API_KEY is not set. Locally: add it to .env. On Streamlit Cloud: Manage app → Settings → Secrets → GEMINI_API_KEY = \"...\"")
+        _client = genai.Client(api_key=key)
     return _client
 
 
