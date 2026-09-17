@@ -1,0 +1,63 @@
+{
+ "n_tagged": 1196,
+ "n_relevant": 243,
+ "failure_stage": {
+  "app_misunderstands": 97,
+  "cannot_refine": 39,
+  "cannot_express": 34,
+  "succeeded": 22,
+  "content_not_indexed": 20,
+  "wrong_metadata": 12,
+  "gave_up": 11,
+  "too_many_results": 5,
+  "not_applicable": 3
+ },
+ "photo_type": {
+  "not_specified": 98,
+  "other": 51,
+  "person_face": 24,
+  "screenshot": 17,
+  "object_thing": 11,
+  "place_venue_travel": 8,
+  "video": 7,
+  "whatsapp_social_download": 6,
+  "pet_animal": 6,
+  "text_in_image": 6,
+  "event_celebration": 5,
+  "document_receipt_id": 4
+ },
+ "cues_remembered": {
+  "none_stated": 69,
+  "exact_date": 8,
+  "source_channel": 12,
+  "context_event": 11,
+  "text_content": 25,
+  "people_present": 27,
+  "approx_time": 49,
+  "visual_detail": 26,
+  "place_location": 6,
+  "emotion_significance": 2
+ },
+ "cues_forgotten": {
+  "none_stated": 114,
+  "approx_time": 28,
+  "exact_date": 42,
+  "visual_detail": 16,
+  "place_location": 31,
+  "people_present": 3,
+  "source_channel": 4,
+  "context_event": 1,
+  "text_content": 1,
+  "emotion_significance": 1
+ },
+ "workaround": {
+  "none_mentioned": 158,
+  "scroll_by_date": 42,
+  "gave_up": 17,
+  "check_other_app": 12,
+  "browse_albums": 7,
+  "search_multiple_terms": 4,
+  "third_party_tool": 2,
+  "use_face_groups": 1
+ }
+}

@@ -1,0 +1,11 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+discovery-engine/data/raw/*.json
+*.db
+discovery-engine/.venv/
+.streamlit/secrets.toml
+.claude/
+*.log
+discovery-engine/data/raw/.reddit_run.json
