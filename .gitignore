@@ -9,3 +9,4 @@ discovery-engine/.venv/
 .claude/
 *.log
 discovery-engine/data/raw/.reddit_run.json
+research/survey/responses_raw.csv
