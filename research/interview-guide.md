@@ -1,7 +1,11 @@
 # User Interview Guide — Vague-Memory Photo Retrieval
 
 **Method:** Contextual inquiry with retrospective retrieval tasks (30–40 min, video call, participant shares their phone screen).
-**Why this method:** Self-reported search behaviour is unreliable — people say "I just search for it" and then scroll for 4 minutes. Watching a real retrieval attempt on their *own* library surfaces the actual failure point, and each task doubles as an MVP test case later.
+**Why this method:** Self-reported search behaviour is unreliable — people say "I just search for it" and then scroll for 4 minutes. Watching a real retrieval attempt on their *own* library surfaces the actual failure point, and each task doubles as an MVP test case later. This is also why we're not running a second questionnaire alongside this — the survey already captured self-report; the interview's only job is to observe actual behavior.
+
+**No separate pre-interview questionnaire needed:** every volunteer came from the survey, so we already have their library size, utility-photo habits, and self-reported last incident (Q1-Q13 in `research/survey/responses_raw.csv`). Skip re-asking that — jump straight to warm-up/tasks, and where useful, compare what they *said* in the survey to what they *do* in the task (a good methodological point for the deck). Only recruit someone who never saw the survey as a last resort, and if so, send them the survey form first as the screener rather than building a new one.
+
+**Async fallback for people who can't do a live call:** if a "Yes"/"Maybe" volunteer can't find a video slot, offer them the option to self-record — screen-record their phone (built-in recorder or Loom) while narrating out loud through the same 3 tasks below, then send the video. Lower quality than live (no follow-up probing in the moment) but keeps the core method — observed behavior, not self-report — instead of losing the participant entirely.
 
 ## What this round of interviews needs to settle
 
