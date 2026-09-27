@@ -4,6 +4,8 @@
 
 **Before the call:** open their survey response (`research/survey/responses_raw.csv`) and note: library size, utility-photo score (Q3), what they said their last hard-to-find photo was, and whether they searched or scrolled. Don't re-ask these — use them to pick Task A/C follow-ups.
 
+**Leading-question check (done once, 27 Sep, after P1 flagged it):** every opinion/reflection question below was rewritten to remove forced binaries ("X or Y?"), pre-loaded menus ("keep trying, ask someone, give up?"), and presupposed outcomes ("...and it was a hassle?"). Rule of thumb going forward: ask fully open first, offer examples only if the person stalls, and never suggest the answer you're hoping for. Behavioral task instructions (Tasks A/B/C) are exempt from this — constraining a *scenario* ("no idea what year") is legitimate task design, not bias; the rule only applies to questions about what someone thinks or feels.
+
 ---
 
 ### Opening (1 min) — say this
@@ -13,10 +15,10 @@
 
 ### 1. Warm-up (4 min)
 1. "How long have you been using [Google Photos / their app]? Roughly how many photos would you guess are in there?"
-2. "Besides actual photos, what else ends up in there — screenshots, receipts, documents, things people send you?"
+2. "What kinds of things end up in there besides your own photos?" *(let them generate the list; only if they stall: "screenshots? documents? things people send you?")*
 3. "Do you use more than one Google account, or has your library ever moved between phones or accounts?"
-   - *If yes →* "Has that ever made it harder to find something — not knowing which account it's in?"
-4. "When's the last time you went looking for an old photo and it was a hassle? What was it, roughly?"
+   - *If yes →* "Has having more than one account changed how you use photos at all?" *(don't name "finding things" — let them bring it up)*
+4. "When's the last time you looked for an old photo? What happened?" *(ask about difficulty only if they don't mention it themselves)*
 
 ---
 
@@ -50,12 +52,14 @@ For each task, jot down (use the table in `interview-guide.md` if typing):
 ---
 
 ### 3. Reflection (8 min)
-5. "You just [searched / scrolled] just now — is that what you'd normally do, or did today feel different?"
-6. "When it didn't work right away, what did you wish you could've told the app that you couldn't?"
+*Each of these is deliberately open-ended — resist the urge to offer a multiple-choice list or a binary. If they stall, wait 3 seconds before rescuing them; silence often gets a better answer than a prompt.*
+
+5. "Walk me through what you just did there — is that pretty typical for you?"
+6. "Was there a point in there that didn't go smoothly? What was that like?" *(only if needed →* "Anything you wish it understood, or could do differently?")
 7. "If you had to describe that photo to a friend who had access to your library, what would you say to them?"
-8. "What do you usually do when this happens — keep trying, ask someone else, give up? Do lost photos usually turn up eventually, or do some just stay lost?"
-9. "How often would you say this happens — daily, weekly, monthly, rarely? And when it does, does it usually matter, or is it just a bit annoying?"
-10. "Have you ever given up on a photo you knew you had, and never went back to it? What was it — and did it matter?"
+8. "What do you usually do when this happens?" *(only if they stall →* "keep trying? ask someone? move on?")
+9. "How often would you say this happens?" *(then, separately)* "When it does happen, what's that like for you?"
+10. "Have you ever given up on a photo you knew you had, and never gone back to it? What was that like — did it stick with you at all?"
 
 ---
 
