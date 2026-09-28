@@ -128,16 +128,26 @@ function draftBadge(s) {
 {
   const s = pres.addSlide(); s.background = { color: C.white };
   title(s, "The engine's verdict: memory isn't the problem — 82% of failures were a fair clue the app misread");
-  txt(s, "What 84 users with a genuine vague-memory failure remembered — and what they'd lost", { x: M, y: 1.45, w: 6.6, h: 0.38, fontSize: 15, bold: true });
-  s.addChart(pres.charts.BAR, [
-    { name: "Remembered", labels: ["Words in the photo", "Visual detail", "Roughly when", "Who was there", "Exact date", "Where"], values: [19, 16, 7, 6, 4, 3] },
-    { name: "Forgotten", labels: ["Words in the photo", "Visual detail", "Roughly when", "Who was there", "Exact date", "Where"], values: [0, 4, 16, 1, 8, 14] },
-  ], {
-    x: M - 0.1, y: 1.85, w: 6.8, h: 4.5, barDir: "bar", barGrouping: "clustered", barGapWidthPct: 55,
-    chartColors: [C.blue, C.orange], showLegend: true, legendPos: "t", legendFontSize: 14, legendFontFace: BODY, legendColor: C.ink,
-    catAxisLabelFontSize: 14, catAxisLabelFontFace: BODY, catAxisLabelColor: C.ink, catAxisOrientation: "maxMin",
-    valAxisHidden: true, valGridLine: { style: "none" }, catGridLine: { style: "none" },
-    showValue: true, dataLabelPosition: "outEnd", dataLabelFontSize: 14, dataLabelColor: C.ink, dataLabelFontFace: BODY,
+  txt(s, "What 84 users with a genuine vague-memory failure remembered — and what they'd lost", { x: M, y: 1.42, w: 6.7, h: 0.35, fontSize: 15, bold: true });
+  // Hand-drawn bars: native charts lose their category labels when converted to Google Slides.
+  const LEG = [["Remembered", C.blue], ["Forgotten", C.orange]];
+  LEG.forEach(([name, col], i) => {
+    const lx = M + i * 1.75;
+    s.addShape(pres.shapes.RECTANGLE, { x: lx, y: 1.88, w: 0.24, h: 0.16, fill: { color: col }, line: { color: col } });
+    txt(s, name, { x: lx + 0.33, y: 1.83, w: 1.3, h: 0.28, fontSize: 14 });
+  });
+  const DATA = [
+    ["Words in the photo", 19, 0], ["Visual detail", 16, 4], ["Roughly when", 7, 16],
+    ["Who was there", 6, 1], ["Exact date", 4, 8], ["Where it was", 3, 14],
+  ];
+  const bx0 = M + 2.05, SC = 0.205, bh = 0.26;
+  DATA.forEach(([label, rem, forg], i) => {
+    const y = 2.28 + i * 0.73;
+    txt(s, label, { x: M, y: y + 0.08, w: 1.95, h: 0.5, fontSize: 14 });
+    [[rem, C.blue, 0], [forg, C.orange, bh + 0.05]].forEach(([v, col, dy]) => {
+      if (v > 0) s.addShape(pres.shapes.RECTANGLE, { x: bx0, y: y + dy, w: v * SC, h: bh, fill: { color: col }, line: { color: col } });
+      txt(s, String(v), { x: bx0 + (v > 0 ? v * SC : 0) + 0.08, y: y + dy - 0.02, w: 0.45, h: 0.3, fontSize: 14, bold: true, color: v > 0 ? C.ink : C.muted });
+    });
   });
   const qx = M + 7.05, qw = CW - 7.05;
   txt(s, "In their words", { x: qx, y: 1.45, w: qw, h: 0.38, fontSize: 15, bold: true });
