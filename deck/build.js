@@ -173,6 +173,8 @@ function draftBadge(s) {
 {
   const s = pres.addSlide(); s.background = { color: C.white };
   title(s, "But most people never search: 74% scroll by date — the very cue 61% of them had forgotten");
+  txt(s, "P2 · 75,000 photos in 4 years · hits this weekly–biweekly · “Many a times I don't get the exact photo when required, but when randomly scrolling later I find it” — the photo isn't lost, it arrives too late to be useful.",
+    { x: M, y: 6.28, w: CW, h: 0.55, fontSize: 14, color: C.ink });
   const sx = M, sw = 3.7;
   [["74%", "scrolled the timeline by date to find it", C.orangeDark],
    ["48%", "used search at all; 29% only ever scrolled", C.blueDark],
@@ -183,9 +185,9 @@ function draftBadge(s) {
   const cx = M + 4.2, cw = CW - 4.2;
   txt(s, "Observed in a live retrieval task (interview P1)", { x: cx, y: 1.65, w: cw, h: 0.4, fontSize: 16, bold: true });
   const rows = [
-    ["Receipt, 2 years old", "Typed the brand he remembered correctly → photos of the machine, not the receipt. Vendor name → nothing. Generic 'bill' → found.", "“The keyword matters.”"],
-    ["Restaurant, unsure of year", "Typed the restaurant's name → found instantly, 8 years old. A proper noun rescued a missing date.", "Found first try"],
-    ["PAN card photo (past attempt)", "Couldn't find it in Google Photos or OneDrive after ~2 minutes, so re-photographed the card instead.", "Workaround: recreate, not retrieve"],
+    ["P1 · receipt, 2 yrs old", "Typed the brand he remembered correctly → photos of the machine, not the receipt. Vendor name → nothing. Generic 'bill' → found.", "“The keyword matters.”"],
+    ["P1 · restaurant, year unknown", "Typed the restaurant's name → found instantly, 8 years old. A proper noun rescued a missing date.", "Found first try"],
+    ["P1 · PAN card  ·  P2 · same pattern", "P1 gave up after ~2 min and re-photographed the card. P2: “I choose alternative path for that work.”", "2 of 2: route around, not retrieve"],
   ];
   rows.forEach(([h, b, k], i) => {
     const y = 2.1 + i * 1.3;
@@ -196,8 +198,8 @@ function draftBadge(s) {
   });
   txt(s, [
     { text: "Why sources disagree: ", options: { bold: true } },
-    { text: "a public review exists only when search fails loudly; the survey also catches silent scroll failures. Interviews P2–P6 in progress.", options: {} },
-  ], { x: cx, y: 6.05, w: cw, h: 0.65, fontSize: 14, color: C.muted });
+    { text: "a public review exists only when search fails loudly; the survey also catches silent scroll failures. Interviews P3–P6 in progress.", options: {} },
+  ], { x: cx, y: 5.72, w: cw, h: 0.5, fontSize: 14, color: C.muted });
   footer(s, "Methods: Google Form survey (n=31) · contextual interviews with live tasks on participants' own libraries. Findings & guide in research repo.");
   s.addNotes("Survey findings: " + LINKS.survey + "  Interview guide: " + LINKS.guide + "  UPDATE this slide once P2-P6 are synthesised.");
 }
@@ -260,7 +262,7 @@ function draftBadge(s) {
       txt(s, b, { x: x + 0.25, y: 3.55, w: colW - 0.5, h: 0.75, fontSize: 14 });
     });
   const cols = [
-    ["Workarounds today", ["Scroll month by month", "Ask someone who was there", "Re-photograph the document", "Give up — 77% have"]],
+    ["Workarounds today", ["Scroll month by month", "Ask someone who was there", "Re-photograph or redo the task (2 of 2 interviews)", "Give up — 77% have"]],
     ["Value to users", ["Minutes back per search", "Documents at the moment of need", "Memories that stop being 'lost'"]],
     ["Value to Google Photos", ["Retrieval is why people keep 15 years of photos here", "Protects Google One storage retention", "Rebuilds trust in AI search after the Ask Photos pause"]],
   ];
@@ -295,9 +297,13 @@ function draftBadge(s) {
   const mx = M + 6.9, mw = CW - 6.9;
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: mx, y: 1.7, w: mw, h: 4.2, rectRadius: 0.12, fill: { color: C.panel }, line: { color: C.line, width: 1, dashType: "dash" } });
   txt(s, "MVP screenshot + live link\n(added once built)", { x: mx, y: 3.4, w: mw, h: 0.8, fontSize: 16, color: C.muted, align: "center", valign: "middle" });
-  txt(s, "Why here: the research shows memory is present (90%) — intelligence is needed to interpret it and to recover from misses, not to help people remember.",
-    { x: M, y: 6.1, w: CW, h: 0.65, fontSize: 15, bold: true, color: C.blueDark });
-  s.addNotes("DRAFT. Direction follows from root cause; confirm with P2-P6 before building. Replace placeholder with MVP screenshot and link.");
+  txt(s, [
+    { text: "“I just wish someone / any agent find it for me what I need.”", options: { italic: true, bold: true } },
+    { text: "   — P2, unprompted, 75k-photo library", options: { color: C.muted } },
+  ], { x: M, y: 6.02, w: CW, h: 0.4, fontSize: 15, color: C.blueDark });
+  txt(s, "Why intelligence belongs here: memory is present (90% recall a cue) — it is needed to interpret partial cues and recover from misses, not to help people remember.",
+    { x: M, y: 6.46, w: CW, h: 0.4, fontSize: 14, color: C.muted });
+  s.addNotes("DRAFT. Direction follows from root cause; confirm with P3-P6 before building. Replace placeholder with MVP screenshot and link.");
 }
 
 // ---------- 9. MVP testing (placeholder) ----------
