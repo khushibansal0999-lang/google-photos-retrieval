@@ -31,7 +31,7 @@ One survey respondent: *"matter of time. sometime we hit it sometime dont. also 
 
 ## Stakes & frequency (the gap reviews couldn't fill)
 
-- **74% experience this at least "a few times a month."**
+- **52% experience this at least "a few times a month"** (16/31: 3 weekly, 13 monthly); another 35% a few times a year.
 - **35% say it "sometimes really matters"** (needed for proof, a memory, a task) — this is not a trivial annoyance for a third of respondents.
 - **77% have given up on a photo they knew existed** at some point (48% "forgot about it afterward," 26% "still think about it sometimes") — meaning most people quietly absorb this failure rather than reporting it, which is exactly why review data alone understates how common it is.
 
