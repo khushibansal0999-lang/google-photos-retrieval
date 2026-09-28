@@ -11,3 +11,5 @@ discovery-engine/.venv/
 discovery-engine/data/raw/.reddit_run.json
 research/survey/responses_raw.csv
 deck/node_modules/
+research/interviews/
+.DS_Store
