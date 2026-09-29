@@ -60,3 +60,28 @@ slide needed its body moved.
 
 The four Google Photos crops are dark-UI. On white they read as heavy blocks, so each sits in
 a `#DADCE0` hairline frame to register as a screenshot rather than a design element.
+
+## Type scale (NextLeap 14pt floor)
+
+The brief sets a hard minimum of 14pt. `lib.py` enforces it: `box()` asserts on
+any run below `FLOOR`, so a slide that breaks the rule cannot be generated.
+
+| Token | Size | Used for |
+|---|---|---|
+| `FLOOR` | 14pt | body, captions, footnotes, section labels, badge number |
+| `SUB`   | 16pt | card headers, inline labels |
+| `LEAD`  | 20pt | card titles that must outrank SUB |
+| `TITLE` | 26pt | slide title, one line only |
+| `STAT`  | 30pt | the big numbers |
+
+Vertical rhythm: badge y=0.14 (h 0.34), title y=0.46 (h 0.60), content from 1.15,
+bottom margin 0.6.
+
+### What the floor costs
+
+At 14pt a full-width box holds ~114 characters a line; a three-across card holds
+~32; a four-across card ~22 and a five-across ~17, which is why any row wider
+than three columns had to be re-laid out rather than merely re-sized. Slide
+capacity fell by roughly 40%, so copy was cut rather than shrunk. `fit()`
+measures by paragraph, not by styled run, so inline bold labels no longer read
+as false overflows.

@@ -31,6 +31,13 @@ O_ORNG = RED
 TITLE_FONT = "Montserrat"
 BODY_FONT  = "Roboto"
 
+# ---- NextLeap hard rule: nothing on a slide may render below 14pt ----
+FLOOR = 14      # body, captions, footnotes, labels. the floor, and the default.
+SUB   = 16      # card headers and inline labels
+LEAD  = 20      # card titles that must outrank SUB
+STAT  = 30      # the big numbers
+TITLE = 26      # slide title
+
 # card colour cycle: (tint fill, solid accent, readable text on that tint)
 CYCLE = [(F_BLUE, BLUE, BLUE), (F_RED, RED, RED), (F_YEL, YELLOW, AMBER),
          (F_GRN, GREEN, GREEN), (F_DARK, INK, F_WHT)]
@@ -49,12 +56,24 @@ def _iv(tbl,size):
     f=(size-lo)/(hi-lo); return tbl[lo]+f*(tbl[hi]-tbl[lo])
 
 def fit(parts, w_in, h_in, label="", tbl=None):
+    """Runs that do not end in a newline flow on into the next run, so measure
+    by paragraph rather than by run: width in inches, then wrap."""
     inner = w_in - 0.20
-    total = 0.0
+    paras, cur = [], []
     for t, size in parts:
-        for line in (t.split("\n")[:-1] if t.endswith("\n") else t.split("\n")):
-            n = max(1, -(-len(line)//max(1,int(inner*_iv(tbl or CPI,size)))))
-            total += n*_iv(LH,size)
+        chunks = t.split("\n")
+        for j, ch in enumerate(chunks):
+            if ch: cur.append((ch, size))
+            if j < len(chunks)-1:
+                paras.append(cur); cur = []
+    if cur: paras.append(cur)
+    total = 0.0
+    for p in paras:
+        if not p:
+            total += _iv(LH, FLOOR); continue
+        w = sum(len(s)/_iv(tbl or CPI, sz) for s, sz in p)
+        lines = max(1, -(-int(w*1000)//int(inner*1000)))
+        total += lines * max(_iv(LH, sz) for _, sz in p)
     if total > h_in - 0.05:
         print(f"  !! OVERFLOW {label}: {total:.2f}in in {h_in:.2f}in box")
     return total
@@ -81,6 +100,9 @@ def fill(oid, color, outline=None, weight=25400):
 def box(oid, page, x, y, w, h, parts, align=None, fam=None, spacing=None, tbl=None):
     """parts = [(text, size, color, bold)] ; returns request list"""
     fam = fam or BODY_FONT
+    for t, size, _, _ in parts:
+        assert size >= FLOOR, (
+            f"{oid}: {size}pt is below the {FLOOR}pt floor -- {t[:40]!r}")
     reqs = [shape(oid, page, x, y, w, h, "TEXT_BOX")]
     full = "".join(p[0] for p in parts)
     reqs.append({"insertText":{"objectId":oid,"insertionIndex":0,"text":full}})
@@ -102,15 +124,17 @@ def box(oid, page, x, y, w, h, parts, align=None, fam=None, spacing=None, tbl=No
     fit([(t,s) for t,s,_,_ in parts], w, h, oid, tbl)
     return reqs
 
-def title(oid, page, text, y=0.50, x=0.6, w=12.13, h=0.74, size=21, col=None):
+def title(oid, page, text, y=0.46, x=0.6, w=12.13, h=0.60, size=TITLE, col=None):
+    """One line at 26pt. Over ~58 chars it wraps and eats the content row,
+    so the fit check below is the signal to shorten the sentence."""
     return box(oid,page,x,y,w,h,[(text+"\n",size,col or INK,True)],
                fam=TITLE_FONT, tbl=CPI_TITLE)
 
-def badge(oid, page, num, label, col=RED, txt=None, lab=None, y=0.20):
+def badge(oid, page, num, label, col=RED, txt=None, lab=None, y=0.14):
     """numbered pill + section label, top-left, as in the design"""
-    r  = [shape(oid+"p",page,0.6,y,0.46,0.28), fill(oid+"p", col)]
-    r += box(oid+"n",page,0.6,y+0.02,0.46,0.25,[(num+"\n",10,txt or F_WHT,True)],align="CENTER")
-    r += box(oid+"l",page,1.17,y+0.02,7.6,0.25,[(label+"\n",10.5,lab or GREY,True)])
+    r  = [shape(oid+"p",page,0.6,y,0.52,0.34), fill(oid+"p", col)]
+    r += box(oid+"n",page,0.6,y+0.03,0.52,0.30,[(num+"\n",FLOOR,txt or F_WHT,True)],align="CENTER")
+    r += box(oid+"l",page,1.24,y+0.03,7.6,0.30,[(label+"\n",FLOOR,lab or GREY,True)])
     return r
 
 def dots(oid, page, x=12.06, y=0.50, d=0.085, gap=0.055):
