@@ -118,3 +118,47 @@ Across 83 free-recall photo descriptions, indoor/outdoor appeared 69 times, numb
 ### Concrete interaction for the MVP
 
 The desk research names the mechanism better than we had: turn the sentence into **editable cue chips with confidence**, e.g. `Sister · Night · Outdoors · Wedding? · Date unknown`. The `?` marks a soft preference rather than a hard filter. That is Solution A's whole thesis made visible in one row of UI, and it is what the MVP should build.
+
+---
+
+# Reframe: the solutions now sit on the prompt, not on documents
+
+Documents were a *use case*, not a mechanism. Leading with them made the solution set look like three unrelated products. The real territory is **stage 3 of the funnel — the moment the user's memory becomes a prompt and the app decides what it means.** All three options below attack that stage. They differ by what the user is actually able to give us.
+
+## A · The Composer — *for when you can describe it*
+
+The sentence becomes **editable cue chips, each carrying a confidence**: `sister · night · outdoors · wedding? · date unknown`. A question mark means a soft preference, never a hard filter. The chips sit above the results as a receipt of what the app understood, so a wrong reading is visible and one tap fixes it.
+
+**Reach 6 · Impact 9 · Confidence 9 · Effort 3 → RICE 162**
+
+- *Strongest objection:* "This is a filter drawer with extra steps, and the desk research explicitly says not to build one."
+- *Answer:* the chips are derived from the user's own sentence, never offered as a menu, and they are capped. A chip the user did not imply is never created. It is a receipt, not a control panel.
+- *What would kill it:* more than four chips on a median query, or an edit rate under 10%, meaning nobody reads them.
+
+## B · The Prompter — *for when you don't know what to say*
+
+The box stops being blank. The app asks for the cues memory actually keeps, strongest first: who was there, indoors or outdoors, roughly where, what was happening. Every field optional. **None of them a date.**
+
+**Reach 9 · Impact 7 · Confidence 5 · Effort 4 → RICE 79**
+
+- *Strongest objection:* "It's a form. Forms feel like work, and no user asked for one."
+- *Answer:* true, and that is exactly why it scores 5 on confidence. It is not the default — it appears after a blank result or a long hesitation. The cue order is not guessed: free-recall research ranks indoor/outdoor, number of people, identity and location above exact date.
+- *What would kill it:* abandonment inside the prompter running higher than abandonment at the blank box.
+
+## C · The Anchor — *for when you can only point*
+
+"It's from the same trip as this one." Point at any photo you *can* find and search relative to it: same day, same people, just before or just after. Words optional — the anchor carries the context the words could not.
+
+**Reach 6 · Impact 8 · Confidence 8 · Effort 5 → RICE 77**
+
+- *Strongest objection:* "Google already has 'more from this day'. This is browsing with a new name."
+- *Answer:* browsing from an anchor exists; **querying** from one does not. The unit is "someone else from this trip, indoors" — an anchor plus a verbal cue. And **P2 performed exactly this operation by hand**, using nearby photos to correct a date estimate that was a month out.
+- *What would kill it:* users cannot find an anchor either, which would mean the problem sits deeper than retrieval.
+
+## Recommendation: A, and the reasoning is not the numbers
+
+B has the widest reach in the entire project — the 74% who never type anything — and it still loses. It scores 5 on confidence because **no user asked for a form**; it came from us and from desk research. A wins on evidence: a controlled test where only the date phrasing changed, plus three unprompted requests from two participants describing this exact interaction. Going first on the provable bet is a legitimate choice, and **B is named as the next bet rather than dropped.**
+
+**Deliberately out of this round:** the stage-5 recovery loop, which the desk research rates the single biggest opportunity and we rate second. The MVP user test is designed to tell us whether that ordering is wrong. Also still out: face-recognition enrichment, now disqualified by a contrast rather than an assertion — face search worked at 5,000 photos and failed at 75,000.
+
+**Where documents went:** into the demo library as the lead scenario, and into the cue model as printed text. They are evidence for A, not a product of their own.
