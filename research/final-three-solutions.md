@@ -80,3 +80,41 @@ Three flows, in build order:
 **Demo library:** roughly 120 items with realistic metadata, seeded with the actual failures from research — a restaurant bill dated in an ambiguous month, a PAN-style ID card, a recovery-password screenshot, childhood photos in black and white, a trip, a wedding. The evaluator confirmed AI-generated images are acceptable.
 
 **Stack, all free:** Python + Gemini for cue extraction and ranking, Streamlit Cloud for deployment, same pattern as the discovery engine.
+
+---
+
+## Update, 29 Sep: two more interviews and a desk-research pass
+
+**Nothing changes the recommendation. Three things strengthen it and one thing needs answering.**
+
+**1 · A third independent, unprompted request for Solution A.** P3, asked what they wished they could tell the app:
+> "Probably describe the contents and specific details in the picture so that the app could filter and narrow down pics that suits the info from the description."
+
+That is now P2 twice and P3 once, all unprompted, all describing A.
+
+**2 · The best quote in the research for what A has to accept.** P4, asked how they'd describe the photo to a friend:
+> "Bro I was roaming around there man. It's somewhere near a waterfall."
+
+Vague, place-ish, entirely non-indexable, completely natural.
+
+**3 · Dropping face recognition is now supported by a contrast, not an assertion.** P2 (~75,000 photos) failed a date-blind task because a 20-year-old face doesn't match the current cluster. P3 (~5,000 photos) succeeded at the same task with the same feature. **Face search degrades with library depth and elapsed time — precisely our segment.**
+
+**4 · Documents are now 3 of 4.** A PAN card, a recovery-password screenshot, and P4's flat "given it was a document, I was unable to exactly locate it". This keeps documents as A's lead demo scenario and vindicates the B evidence being folded in.
+
+**5 · A new failure mode.** P4 could not tell whether the photo was *missing* or merely *unfindable*: "I don't even know if it exists on this device or not." The archive's promise fails a level deeper than retrieval.
+
+**6 · A new workaround class.** P3 keeps documents in Drive, never in Photos, and manually renames and folders everything important. The product lost the use case before a search ever happens. `WORKAROUNDS` needs **pre-emptive manual filing** and **store elsewhere**; both are invisible in telemetry.
+
+### The one thing that needs answering
+
+Desk research puts the largest opportunity at the **recovery loop** — turning "that's not it, but it's close" into the next search — on the grounds that a near miss is where users hand over the most information for the least effort. Our own evidence puts it at the **understanding step**, because the controlled test flipped total failure into an instant answer by changing only the date phrasing.
+
+**Both are in A**, and the deck now names the disagreement rather than smoothing it: A exposes its interpretation before it retrieves, *and* asks one narrowing question after a near miss. The MVP build order reflects our own evidence first — disambiguation, then narrowing — and the user test is what settles which matters more.
+
+### External corroboration worth citing
+
+Across 83 free-recall photo descriptions, indoor/outdoor appeared 69 times, number of people 64, identity of people 56 and location 54, while **exact date proved notably less useful than time of day or broad temporal context**. Our survey found the same shape independently: 74% navigate by date, 61% had forgotten it.
+
+### Concrete interaction for the MVP
+
+The desk research names the mechanism better than we had: turn the sentence into **editable cue chips with confidence**, e.g. `Sister · Night · Outdoors · Wedding? · Date unknown`. The `?` marks a soft preference rather than a hard filter. That is Solution A's whole thesis made visible in one row of UI, and it is what the MVP should build.
