@@ -1,36 +1,33 @@
 from lib import *
 P="p10"; R=[]
-for i in range(2,26): R.append({"deleteObject":{"objectId":f"p10_i{i}"}})
-R += title("mtr9t",P,"Every metric with its formula, its target, and the event data it needs")
+R += title("mtr9t",P,"Every measure: formula, target, and the data it needs")
 R += badge("mtr9bg",P,"09","Success metrics",BLUE)
 R += dots("mtr9dt",P)
 
-COLS=[(0.6,2.75),(3.45,4.35),(7.90,1.45),(9.45,3.28)]
-HDR=["METRIC","FORMULA","TARGET","EVENT DATA REQUIRED"]
-HY=1.26
-for j,(x,w) in enumerate(COLS):
-    R += box(f"mtr9h{j}",P,x,HY,w,0.3,[(HDR[j]+"\n",8.5,ORNG,True)])
+cols=[(0.74,2.40),(3.24,4.30),(7.64,1.30),(9.04,3.60)]
+hdr=["MEASURE","HOW IT IS WORKED OUT","TARGET","DATA WE WOULD NEED"]
+for c,(x,w) in enumerate(cols):
+    R += box(f"mtr9h{c}",P,x,TOP,w,0.30,[(hdr[c]+"\n",FLOOR,ORNG,True)])
 
-rows=[("North star · Vague-memory retrieval success rate","successful sessions ÷ sessions seeking an item over a year old","baseline +15pp","session_start · target_opened · item_age",True),
- ("Expression rate","sessions with at least one cue entered ÷ retrieval sessions","48% → 65%","query_submitted · cue_count",False),
- ("Interpretation accuracy","queries where no cue was silently hard-filtered ÷ queries containing a fuzzy cue","≥ 95%","cue_parsed{type, confidence} · filter_applied{hard|soft}",True),
- ("Recognition rate","target opened ÷ sessions that returned results","≥ 70%","result_shown{rank} · result_opened",False),
- ("Recovery rate","dead sessions rescued ÷ sessions with no usable result","≥ 30%","zero_result · narrowing_offered · narrowing_accepted",False),
- ("Clarifying questions per session   GUARDRAIL","questions asked ÷ retrieval sessions","≤ 0.4","clarify_shown · clarify_answered · clarify_skipped",False),
- ("Route-around rate   DIAGNOSTIC","documents re-photographed within 10 min of a failed search ÷ failed document searches","trending down","search_failed · capture{type} · timestamp",False)]
-Y=1.62; RH=0.62
-for i,(m,f,t,d,band) in enumerate(rows):
-    y=Y+i*RH
-    if band:
-        R += [shape(f"mtr9b{i}",P,0.5,y-0.04,12.33,RH-0.06), fill(f"mtr9b{i}",F_NEUT)]
-    vals=[(m,10,INK,True),(f,9.5,GREY,False),(t,10,BLUE,True),(d,9,GREY,False)]
-    for j,(x,w) in enumerate(COLS):
-        txt,sz,col,bd = vals[j]
-        R += box(f"mtr9r{i}c{j}",P,x,y,w,RH-0.08,[(txt+"\n",sz,col,bd)])
+RH=0.76; RY=1.36
+rows=[("The one number","photos found ÷ hunts for something over a year old","+15pts","hunt started, photo opened, how old it was",False),
+ ("People who type something","searches with a clue in them ÷ all hunts","48→65%","what was typed, how many clues",False),
+ ("Clues read correctly","clues kept loose ÷ clues that were vague","95%+","how each clue was read, and whether it filtered",True),
+ ("Photo spotted in results","photo opened ÷ searches that returned something","70%+","what was shown, in what order, what was opened",False),
+ ("Dead ends rescued","hunts saved ÷ hunts that returned nothing","30%+","empty result, question offered, question answered",False),
+ ("Questions per search","questions asked ÷ hunts   (a limit, not a goal)","0.4 or less","question shown, answered, skipped",False)]
+for i,(m,f,t,d,hot) in enumerate(rows):
+    y=RY+i*(RH+0.02)
+    R += [shape(f"mtr9b{i}",P,0.6,y,12.13,RH), fill(f"mtr9b{i}", F_ORNG if hot else (F_NEUT if i%2==0 else F_WHT))]
+    vals=[m,f,t,d]
+    for c,(x,w) in enumerate(cols):
+        bold = (c==0 or c==2)
+        col = (ORNG if hot else (INK if c==0 else BLUE)) if bold else GREY
+        R += box(f"mtr9r{i}c{c}",P,x,y+0.10,w,0.56,[(vals[c]+"\n",FLOOR,col,bold)])
 
-R += box("mtr9ft",P,0.6,6.04,12.13,1.16,[
-  ("How this gets read:",10.5,INK,True),
-  ("  the north star is the only one that matters on its own. Interpretation accuracy is the metric the chosen solution moves directly, and the only one here that cannot be gamed by returning more results. Clarifying questions per session is a guardrail, not a goal.\n",10.5,GREY,False),
-  ("Not yet instrumented:",10.5,ORNG,True),
-  ("  every event above is a proposal. Targets are set against the MVP baseline measured in the user test, not against Google’s real telemetry, which we do not have.\n",10.5,GREY,False)])
+R += box("mtr9ft",P,0.6,6.12,12.13,0.82,[
+  ("How to read this:",FLOOR,INK,True),
+  ("  the first line is the one that matters on its own. “Clues read correctly” is what our fix moves directly, and the only one you cannot game by returning more photos.  ",FLOOR,GREY,False),
+  ("None of it is built yet —",FLOOR,ORNG,True),
+  ("  targets are set against the MVP test, not Google's real numbers, which we do not have.\n",FLOOR,GREY,False)])
 dump(R,"s9")

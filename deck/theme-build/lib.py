@@ -32,11 +32,11 @@ TITLE_FONT = "Montserrat"
 BODY_FONT  = "Roboto"
 
 # ---- NextLeap hard rule: nothing on a slide may render below 14pt ----
-FLOOR = 14      # body, captions, footnotes, labels. the floor, and the default.
-SUB   = 16      # card headers and inline labels
-LEAD  = 20      # card titles that must outrank SUB
-STAT  = 30      # the big numbers
-TITLE = 26      # slide title
+# Everything on the slide is 14. Only the slide title is larger. Hierarchy is
+# carried by weight and colour, never by size, which keeps the pages compact.
+FLOOR = 14
+SUB = LEAD = STAT = FLOOR   # kept as names so older scripts still resolve
+TITLE = 24                  # slide title, the only thing above the floor
 
 # card colour cycle: (tint fill, solid accent, readable text on that tint)
 CYCLE = [(F_BLUE, BLUE, BLUE), (F_RED, RED, RED), (F_YEL, YELLOW, AMBER),
@@ -124,20 +124,30 @@ def box(oid, page, x, y, w, h, parts, align=None, fam=None, spacing=None, tbl=No
     fit([(t,s) for t,s,_,_ in parts], w, h, oid, tbl)
     return reqs
 
-def title(oid, page, text, y=0.46, x=0.6, w=12.13, h=0.60, size=TITLE, col=None):
-    """One line at 26pt. Over ~58 chars it wraps and eats the content row,
+TOP = 1.02   # first content row starts here
+BOT = 6.95   # nothing below this
+PAD = 0.14   # inset from a card edge to its text
+
+def title(oid, page, text, y=0.42, x=0.6, w=12.13, h=0.54, size=TITLE, col=None):
+    """One line at 24pt. Over ~62 chars it wraps and eats the content row,
     so the fit check below is the signal to shorten the sentence."""
     return box(oid,page,x,y,w,h,[(text+"\n",size,col or INK,True)],
                fam=TITLE_FONT, tbl=CPI_TITLE)
 
-def badge(oid, page, num, label, col=RED, txt=None, lab=None, y=0.14):
+def badge(oid, page, num, label, col=RED, txt=None, lab=None, y=0.12):
     """numbered pill + section label, top-left, as in the design"""
-    r  = [shape(oid+"p",page,0.6,y,0.52,0.34), fill(oid+"p", col)]
-    r += box(oid+"n",page,0.6,y+0.03,0.52,0.30,[(num+"\n",FLOOR,txt or F_WHT,True)],align="CENTER")
-    r += box(oid+"l",page,1.24,y+0.03,7.6,0.30,[(label+"\n",FLOOR,lab or GREY,True)])
+    r  = [shape(oid+"p",page,0.6,y,0.50,0.30), fill(oid+"p", col)]
+    r += box(oid+"n",page,0.6,y+0.01,0.50,0.31,[(num+"\n",FLOOR,txt or F_WHT,True)],align="CENTER")
+    r += box(oid+"l",page,1.20,y+0.01,7.6,0.31,[(label+"\n",FLOOR,lab or GREY,True)])
     return r
 
-def dots(oid, page, x=12.06, y=0.50, d=0.085, gap=0.055):
+def card(oid, page, x, y, w, h, parts, tint=None, outline=None):
+    """tinted panel plus its text, inset by PAD on every side"""
+    r = [shape(oid+"b",page,x,y,w,h), fill(oid+"b", tint or F_NEUT, outline)]
+    r += box(oid,page,x+PAD,y+PAD-0.02,w-2*PAD,h-2*PAD+0.04,parts)
+    return r
+
+def dots(oid, page, x=12.06, y=0.44, d=0.085, gap=0.055):
     """the four-dot Google motif, top-right"""
     r=[]
     for i,c in enumerate([BLUE,RED,YELLOW,GREEN]):
