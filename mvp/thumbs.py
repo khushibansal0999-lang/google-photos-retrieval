@@ -1,14 +1,28 @@
-"""Thumbnails, drawn at run time.
+"""Thumbnails: real photographs where we have one, drawn where we should not.
 
-No image files ship with this repo, which keeps it small, free to host, and
-free of anything that looks like a real person's photo library. Paperwork is
-drawn as a page and screenshots as a phone, so an evaluator can tell at a
-glance what kind of thing each result is without reading the label.
+Photos come from mvp/scenes/, a small set of CC0 stock images fetched once by
+tools/fetch_scenes.py and committed, so the deployed app depends on no one
+else's server. A scene folder is found by slugifying the item's title, and
+which of its variants an item gets is decided by a hash of the item id, so a
+scene that repeats through the library does not repeat the same frame.
+
+Documents and screenshots stay drawn, deliberately. A real photograph of a
+bill or an ID card is someone's actual bill or ID card, and the drawn page and
+phone glyphs let an evaluator see what kind each result is without reading the
+label -- which the interface is relying on.
+
+If mvp/scenes/ is missing or incomplete, every item falls back to the drawn
+version and the app still runs. Nobody should meet a broken image.
 """
 import hashlib
+import re
+from functools import lru_cache
 from io import BytesIO
+from pathlib import Path
 
 from PIL import Image, ImageDraw
+
+SCENES = Path(__file__).resolve().parent / "scenes"
 
 W = H = 300
 
@@ -106,20 +120,55 @@ def logo(px=128):
     return img
 
 
+def _slug(title):
+    """Must match tools/fetch_scenes.py, which named the folders."""
+    return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
+
+
+@lru_cache(maxsize=64)
+def _variants(slug):
+    d = SCENES / slug
+    return tuple(sorted(p for p in d.glob("*.jpg"))) if d.is_dir() else ()
+
+
+def _scene(item):
+    """The committed photo for this item, or None to fall back to drawing."""
+    if item["kind"] != "photo":
+        return None
+    files = _variants(_slug(item["title"]))
+    if not files:
+        return None
+    path = files[_seed(item) % len(files)]
+    try:
+        return Image.open(path).convert("RGB").resize((W, H), Image.LANCZOS)
+    except Exception:                       # noqa: BLE001 -- a bad file is not fatal
+        return None
+
+
 def render(item):
-    img = Image.new("RGB", (W, H), (255, 255, 255))
-    draw = ImageDraw.Draw(img, "RGBA")
-    s = _seed(item)
-    {"document": _document, "screenshot": _screenshot}.get(item["kind"], _photo)(img, draw, s)
+    img = _scene(item)
+    if img is None:
+        img = Image.new("RGB", (W, H), (255, 255, 255))
+        draw = ImageDraw.Draw(img, "RGBA")
+        s = _seed(item)
+        {"document": _document,
+         "screenshot": _screenshot}.get(item["kind"], _photo)(img, draw, s)
     if item.get("bw"):
         img = img.convert("L").convert("RGB")
     return img
 
 
-def png(item):
+@lru_cache(maxsize=256)
+def _png(key, kind, title, bw):
     buf = BytesIO()
-    render(item).save(buf, format="PNG", optimize=True)
+    render({"id": key, "kind": kind, "title": title, "bw": bw}).save(
+        buf, format="JPEG", quality=82, optimize=True)
     return buf.getvalue()
+
+
+def png(item):
+    # cached on the fields render actually reads, so the grid is cheap to redraw
+    return _png(item["id"], item["kind"], item["title"], bool(item.get("bw")))
 
 
 if __name__ == "__main__":

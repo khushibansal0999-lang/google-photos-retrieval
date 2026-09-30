@@ -77,10 +77,14 @@ whole history is a filter drawer, which Google already has and people already do
 not use. "Goa or Udaipur?" when those are the only two places among your near
 misses is a narrowing question. The difference is the whole design.
 
-**No image files.** Thumbnails are drawn at run time with Pillow, so the repo
-stays small, hosting stays free, and nothing here resembles a real person's
-photo library. Paperwork is drawn as a page and screenshots as a phone, so the
-kind of each result reads at a glance.
+**Real photos for photos, drawn glyphs for paperwork.** The 92 photo items use
+CC0 stock images in `scenes/`, fetched once by `tools/fetch_scenes.py` and
+committed, so the deployed app depends on nobody else's server. Documents and
+screenshots stay drawn on purpose: a real photograph of a bill or an ID card is
+someone's actual bill or ID card, and the page and phone glyphs let you see
+what kind each result is without reading the label, which the interface leans
+on. If `scenes/` is missing, everything falls back to the drawn version and the
+app still runs.
 
 **The library is seeded, and seeded honestly.** 132 items across 1998–2026,
 carrying failures that came out of the research: two bills in different Augusts,
@@ -95,7 +99,9 @@ no usable metadata, and a waterfall nobody wrote the location down for.
 | `cues.py` | sentence to cues with confidences. Gemini + rule-based fallback |
 | `search.py` | scoring, the ambiguity check, narrowing questions, the near-miss loop |
 | `library.py` | the 132-item demo library |
-| `thumbs.py` | thumbnails drawn at run time |
+| `thumbs.py` | thumbnails: the CC0 photo if there is one, else drawn |
+| `scenes/` | the CC0 photos, plus `CREDITS.md` |
+| `tools/fetch_scenes.py` | refills `scenes/`. Run by hand, never by the app |
 
 Each runs standalone for a quick sanity check:
 
@@ -113,10 +119,9 @@ Streamlit Community Cloud, free tier:
 3. Optional: Settings, then Secrets, then `GEMINI_API_KEY = "..."`.
    Leave it out and it runs on the built-in reader.
 
-**Watch out:** Streamlit Cloud reads `requirements.txt` from the repo root by
-default, and the root file does not list `pillow`, which this needs for
-thumbnails. Either point the app at `mvp/requirements.txt` or add
-`pillow>=10.0` to the root one, or it will fail on boot.
+`pillow` is now in both `requirements.txt` files. It has to be: Streamlit Cloud
+reads the root one by default, and without Pillow the app cannot render a
+single thumbnail and dies on boot.
 
 The free tier sleeps after inactivity, so open the link once before sharing it.
 
