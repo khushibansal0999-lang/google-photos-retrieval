@@ -25,13 +25,28 @@ PHOTO, DOC, SHOT = "photo", "document", "screenshot"
 
 
 def _i(id, d, kind, title, desc, *, people=(), place="", venue="", setting="",
-       event="", text="", tags=(), bw=False):
+       event="", text="", tags=(), bw=False, tod="", crowd=""):
+    """tod and crowd exist because desk research found people recall the time of
+    day and how many were in frame far more reliably than an exact date. They
+    are the two highest-value narrowing questions we can ask."""
     return {
         "id": id, "date": d, "kind": kind, "title": title, "desc": desc,
         "people": list(people), "place": place, "venue": venue,
         "setting": setting, "event": event, "text": text,
         "tags": list(tags), "bw": bw,
+        "tod": tod, "crowd": crowd or ("nobody" if not people else "a few"),
     }
+
+
+# time of day and how many people, for the planted items
+_TOD_CROWD = {
+    "b001": ("evening", "a few"),    "b002": ("morning", "one other"),
+    "d001": ("afternoon", "nobody"), "s001": ("night", "nobody"),
+    "w001": ("afternoon", "a few"),  "w002": ("afternoon", "a few"),
+    "c001": ("afternoon", "one other"), "c002": ("evening", "a crowd"),
+    "g001": ("night", "one other"),  "g002": ("night", "a crowd"),
+    "m001": ("morning", "nobody"),   "p001": ("afternoon", "a few"),
+}
 
 
 # ---------------------------------------------------------------- planted ---
@@ -228,9 +243,20 @@ def _filler_items():
     return out
 
 
+_TODS = ["morning", "afternoon", "evening", "night"]
+_CROWDS = ["nobody", "one other", "a few", "a crowd"]
+
+
 def load():
     """Every item, newest first — the order a photo app would show them in."""
     items = PLANTED + _filler_items()
+    for k, it in enumerate(items):
+        if it["id"] in _TOD_CROWD:
+            it["tod"], it["crowd"] = _TOD_CROWD[it["id"]]
+        elif not it["tod"]:
+            # spread the filler so a question about either actually splits it
+            it["tod"] = _TODS[k % 4]
+            it["crowd"] = "nobody" if not it["people"] else _CROWDS[1 + (k % 3)]
     items.sort(key=lambda x: x["date"], reverse=True)
     return items
 

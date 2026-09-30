@@ -22,6 +22,12 @@ def _has(word, text):
     """Whole-word match. Without the boundaries, "trip" finds "strip"."""
     return re.search(rf"\b{re.escape(word)}\b", text) is not None
 
+
+def _starts(word, text):
+    """Word-start match, so "water" reaches "waterfall" and "trip" reaches
+    "trips" — but "trip" still cannot reach "strip"."""
+    return re.search(rf"\b{re.escape(word)}\w+", text) is not None
+
 # how much each kind of agreement is worth
 W_TEXT, W_TAG, W_TITLE = 3.0, 2.0, 2.5
 W_PEOPLE, W_PLACE, W_SETTING, W_KIND, W_BW = 2.0, 2.0, 1.0, 1.5, 2.0
@@ -82,6 +88,10 @@ def score(it, cues):
             pts += W_TAG; why.append(f"tagged “{w}”")
         elif _has(w, hay):
             pts += 1.0; why.append(f"mentions “{w}”")
+        elif _starts(w, it["title"].lower()) or _starts(w, " ".join(it["tags"]).lower()):
+            pts += 1.5; why.append(f"“{w}…” in it")
+        elif _starts(w, hay):
+            pts += 0.75; why.append(f"“{w}…” mentioned")
 
     for p in cues["people"]:
         if p in [x.lower() for x in it["people"]]:
@@ -165,72 +175,136 @@ def ambiguity(results, cues):
     }
 
 
-def narrowing(results):
-    """Nothing landed. Ask about whatever best splits the near misses.
+# The order here is not arbitrary. Across 83 free-recall photo descriptions in
+# desk research, people volunteered indoor/outdoor 69 times, how many people
+# were there 64, who they were 56 and where 54 — while an exact date proved
+# notably less useful than the time of day. So we ask in that order, and only
+# ever about something the person did not already tell us.
+DIMENSIONS = [
+    ("setting", "Were you indoors or outdoors?",
+     lambda i: i["setting"]),
+    ("crowd", "How many people were in it?",
+     lambda i: i["crowd"]),
+    ("who", "Who was with you?",
+     lambda i: ", ".join(i["people"]) if i["people"] else "nobody"),
+    ("place", "Where was it?",
+     lambda i: i["place"] or "somewhere not recorded"),
+    ("tod", "What time of day?",
+     lambda i: i["tod"]),
+    ("event", "What was going on?",
+     lambda i: i["event"] or "an ordinary day"),
+    ("kind", "A photo, or something you photographed?",
+     lambda i: {"photo": "a photo", "document": "paperwork",
+                "screenshot": "a screenshot"}.get(i["kind"])),
+    ("era", "Roughly how old is it?",
+     lambda i: "more than five years" if i["date"] < "2021" else "fairly recent"),
+]
+_DIM = {k: fn for k, _, fn in DIMENSIONS}
 
-    Deliberately drawn from attributes people do not think to type, which is
-    where the remaining information actually is.
+
+def narrowing(results, cues=None, asked=()):
+    """Ask about whatever best splits what is actually on screen.
+
+    Two rules keep this from becoming a filter drawer. The options are computed
+    from the candidates in front of the person, never from the whole library.
+    And we never ask about something they already told us.
     """
-    pool = [r for r in results[:12]]
-    if not pool:
+    pool = results[:14]
+    if len(pool) < 2:
         return None
+    cues = cues or {}
+    already = {
+        "setting": bool(cues.get("setting")), "who": bool(cues.get("people")),
+        "place": bool(cues.get("place")), "kind": bool(cues.get("kind")),
+    }
 
-    def split(key, fn):
+    best = None
+    for key, label, fn in DIMENSIONS:
+        if key in asked or already.get(key):
+            continue
         vals = {}
         for r in pool:
             v = fn(r["item"])
             if v:
-                vals.setdefault(v, 0)
-                vals[v] += 1
-        return vals if len(vals) >= 2 else None
-
-    for label, key, fn, render in [
-        ("Was anyone else in it?", "people",
-         lambda i: "with people" if i["people"] else "just the thing itself",
-         lambda v: v),
-        ("Indoors or outdoors?", "setting", lambda i: i["setting"], lambda v: v),
-        ("Is it a photo or something you photographed?", "kind",
-         lambda i: {"photo": "a photo", "document": "paperwork",
-                    "screenshot": "a screenshot"}.get(i["kind"]), lambda v: v),
-        ("How old is it, roughly?", "era",
-         lambda i: "older than five years" if i["date"] < "2021" else "recent",
-         lambda v: v),
-    ]:
-        vals = split(key, fn)
-        if vals:
-            return {
-                "type": "narrow", "key": key, "question": label,
-                "because": "Nothing matched with any confidence, so here are the "
-                           "closest few. One more detail would cut this down.",
-                "options": [{"value": v, "label": render(v), "hint": f"{n} of these"}
-                            for v, n in sorted(vals.items(), key=lambda kv: -kv[1])],
-            }
-    return None
+                vals[v] = vals.get(v, 0) + 1
+        if len(vals) < 2:
+            continue
+        # an even split removes the most candidates, so prefer it
+        spread = min(vals.values()) / max(vals.values())
+        cand = {
+            "type": "narrow", "key": key, "question": label,
+            "because": "Here are the closest few. One more detail cuts this down.",
+            "options": [{"value": v, "label": v, "hint": f"{n} of these"}
+                        for v, n in sorted(vals.items(), key=lambda kv: -kv[1])][:4],
+        }
+        if best is None or spread > best[0]:
+            best = (spread, cand)
+    return best[1] if best else None
 
 
 def apply_narrowing(results, key, value):
-    def keep(it):
-        if key == "people":
-            return ("with people" if it["people"] else "just the thing itself") == value
-        if key == "setting":
-            return it["setting"] == value
-        if key == "kind":
-            return {"photo": "a photo", "document": "paperwork",
-                    "screenshot": "a screenshot"}.get(it["kind"]) == value
-        if key == "era":
-            return ("older than five years" if it["date"] < "2021" else "recent") == value
-        return True
-    return [r for r in results if keep(r["item"])]
+    fn = _DIM.get(key)
+    if not fn:
+        return results
+    return [r for r in results if fn(r["item"]) == value]
+
+
+# ------------------------------------------------------- the near-miss loop -
+# "Close, but not it" is the most informative thing a person can tell us, and
+# the thing today's product throws away. Note the asymmetry with the question
+# cap above: we cap the questions *we* start. A rejection is the person asking
+# us to try again, so acting on it is invited rather than imposed.
+REJECTIONS = [
+    ("right_event", "Right occasion, wrong photo"),
+    ("wrong_person", "Wrong people"),
+    ("wrong_place", "Wrong place"),
+    ("wrong_time", "Wrong time"),
+    ("not_close", "Not close at all"),
+]
+
+
+def reject(results, item, reason):
+    """Re-rank on what a rejected candidate tells us. Returns (results, note)."""
+    out, notes = [], ""
+    for r in results:
+        it = r["item"]
+        if it["id"] == item["id"]:
+            continue                      # the rejected one always goes
+        keep, bump = True, 0.0
+        if reason == "right_event":
+            # the strongest signal there is: same occasion, different frame
+            same = (it["event"] and it["event"] == item["event"]) or \
+                   it["date"][:7] == item["date"][:7]
+            if same:
+                bump = 5.0
+            else:
+                keep = False
+            notes = "Kept the same occasion, dropped everything else."
+        elif reason == "wrong_person":
+            keep = set(it["people"]) != set(item["people"])
+            notes = "Dropped anything with the same people in it."
+        elif reason == "wrong_place":
+            keep = (it["place"] or "") != (item["place"] or "")
+            notes = "Dropped that place."
+        elif reason == "wrong_time":
+            keep = it["date"][:7] != item["date"][:7]
+            notes = "Dropped that month."
+        elif reason == "not_close":
+            keep = not (set(it["tags"]) & set(item["tags"]))
+            notes = "Dropped anything that looks like it."
+        if keep:
+            out.append({**r, "score": round(r["score"] + bump, 2)})
+    out.sort(key=lambda r: -r["score"])
+    return out, notes
 
 
 def verdict(results):
+    """"empty" means we have nothing at all. Anything we do have is a near miss
+    worth showing, because a screen with three wrong photos on it is still more
+    use than a blank one — the person can tell us which way to go from there."""
     if not results:
         return "empty"
-    if results[0]["score"] >= GOOD:
-        return "confident"
-    if results[0]["score"] >= CLOSE:
-        return "near"
-    return "empty"
+    return "confident" if results[0]["score"] >= GOOD else "near"
 
 
 def answer(items, cues, year_override=None, narrow=None):
@@ -265,5 +339,5 @@ def answer(items, cues, year_override=None, narrow=None):
     if not answered:
         ask = ambiguity(res, cues)
         if ask is None and v != "confident":
-            ask = narrowing(res)
+            ask = narrowing(res, cues)
     return {"results": res, "verdict": v, "ask": ask}
