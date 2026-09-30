@@ -81,6 +81,31 @@ def _screenshot(img, draw, s):
         y += 22
 
 
+# Google Photos' four brand colours, in the order they sit on the pinwheel.
+GP_BLUE, GP_RED, GP_YELLOW, GP_GREEN = "#4285F4", "#EA4335", "#FBBC04", "#34A853"
+
+
+def logo(px=128):
+    """The four-blade pinwheel, drawn rather than shipped as a file.
+
+    Each blade is a half-disc whose flat edge runs from the centre outwards,
+    rotated a quarter turn from the one before it. Used for the browser tab;
+    the header uses the SVG in app.py, which stays crisp at any size.
+    """
+    k = px / 48.0
+    img = Image.new("RGBA", (px, px), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    blades = [                                   # bbox in a 48pt frame, arc span
+        ((14, 4, 34, 24), -90, 90, GP_BLUE),     # top, bulging right
+        ((24, 14, 44, 34), 0, 180, GP_RED),      # right, bulging down
+        ((14, 24, 34, 44), 90, 270, GP_YELLOW),  # bottom, bulging left
+        ((4, 14, 24, 34), 180, 360, GP_GREEN),   # left, bulging up
+    ]
+    for (x0, y0, x1, y1), a, b, colour in blades:
+        draw.pieslice([x0 * k, y0 * k, x1 * k, y1 * k], a, b, fill=colour)
+    return img
+
+
 def render(item):
     img = Image.new("RGB", (W, H), (255, 255, 255))
     draw = ImageDraw.Draw(img, "RGBA")

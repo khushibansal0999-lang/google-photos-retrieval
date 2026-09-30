@@ -1,8 +1,11 @@
-# You Know The One — AI-native MVP
+# Tip of My Tongue — AI-native MVP
 
-*"Show me that photo, you know the one."* That is how people actually ask each
-other, and it is exactly the state this is built for: you are sure the photo
-exists, you can half describe it, and that is all you have.
+Named for the state people arrive in: you are sure the photo exists, you can
+half describe it, and the description will not resolve into the thing itself.
+
+It wears Google Photos' colours and type deliberately. The argument is that
+this behaviour belongs inside Photos, so it should be possible to mistake the
+surface for Photos while reading the interaction as new.
 
 One change to photo search: **show the person what you understood before you
 search, hold the uncertain parts loosely, and ask once.**

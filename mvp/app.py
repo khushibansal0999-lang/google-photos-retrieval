@@ -1,8 +1,12 @@
-"""You Know The One — say what you remember, see what the app understood.
+"""Tip of My Tongue — say what you remember, see what the app understood.
 
-The name is the point. "Show me that photo, you know the one" is how people
-actually ask each other, and it is exactly the state this product is built for:
-you are sure it exists, you can half describe it, and that is all.
+The name is the cognitive phenomenon this product is built around: you are sure
+the photo exists, you can half describe it, and the description will not
+resolve into the thing itself. That is the state people arrive in.
+
+It wears Google Photos' own colours and type on purpose. The argument is that
+this behaviour belongs inside Photos, so it should be possible to mistake this
+for Photos while reading the interaction as new.
 
 Run locally:  streamlit run mvp/app.py
 
@@ -42,23 +46,57 @@ import search as searchmod     # noqa: E402
 import thumbs                  # noqa: E402
 from library import LIBRARY, TODAY  # noqa: E402
 
-st.set_page_config(page_title="You Know The One", page_icon="🔎", layout="wide")
+st.set_page_config(page_title="Tip of My Tongue", page_icon=thumbs.logo(),
+                   layout="wide")
 
+# The pinwheel, inline so it stays crisp and costs no network request.
+PINWHEEL = """<svg width="30" height="30" viewBox="0 0 48 48">
+  <path d="M24 24 V4 A10 10 0 0 1 24 24 Z" fill="#4285F4"/>
+  <path d="M24 24 H44 A10 10 0 0 1 24 24 Z" fill="#EA4335"/>
+  <path d="M24 24 V44 A10 10 0 0 1 24 24 Z" fill="#FBBC04"/>
+  <path d="M24 24 H4  A10 10 0 0 1 24 24 Z" fill="#34A853"/>
+</svg>"""
+
+# Google Photos' surface: Roboto, a pill search field, 8px thumbnails, and the
+# four brand colours used only where they mean something.
 st.markdown("""
 <style>
-  .block-container {padding-top: 1.6rem; max-width: 1200px;}
-  .chip {display:inline-block; padding:3px 10px; margin:2px 4px 2px 0;
-         border-radius:13px; font-size:13px;}
-  .c-sure {background:#e8f0fe; color:#1a73e8; border:1px solid #1a73e8;}
-  .c-maybe{background:#fef7e0; color:#b45309; border:1px dashed #f9ab00;}
-  .why {display:inline-block; padding:2px 7px; margin:2px 3px 0 0; border-radius:9px;
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+  /* Streamlit sets Source Sans on almost everything, so this has to win. It
+     deliberately leaves <span> alone: Streamlit's icons are ligature spans in
+     an icon font, and overriding those prints "keyboard_double_arrow_right"
+     where the arrow should be. Spans inherit from these parents anyway. */
+  .stApp, .stApp div, .stApp p, .stApp li, .stApp label,
+  .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5,
+  .stApp button, .stApp input, .stApp textarea
+        {font-family:'Roboto','Helvetica Neue',Arial,sans-serif !important;}
+  .block-container {padding-top: 1.4rem; max-width: 1200px;}
+  .brand {display:flex; align-items:center; gap:11px; margin-bottom:2px;}
+  .brand h1 {font-size:21px; font-weight:500; color:#3c4043; margin:0;
+             letter-spacing:.1px;}
+  .chip {display:inline-block; padding:4px 12px; margin:2px 5px 2px 0;
+         border-radius:16px; font-size:13px; font-weight:500;}
+  .c-sure {background:#e8f0fe; color:#1967d2; border:1px solid #d2e3fc;}
+  .c-maybe{background:#fef7e0; color:#b06000; border:1px dashed #fdd663;}
+  .why {display:inline-block; padding:2px 8px; margin:3px 3px 0 0; border-radius:10px;
         background:#f1f3f4; color:#5f6368; font-size:11px;}
-  .cap {font-size:13px; line-height:1.3; color:#202124; margin:5px 0 1px;}
+  .cap {font-size:13px; line-height:1.35; color:#202124; margin:6px 0 1px;}
   .meta{font-size:11.5px; color:#5f6368;}
-  .lede{color:#5f6368; font-size:15px; margin-top:-10px;}
-  .ask {background:#e8f0fe; border:1px solid #1a73e8; border-radius:10px;
-        padding:12px 15px; margin:4px 0 8px;}
+  .lede{color:#5f6368; font-size:14px; margin:0 0 12px 41px;}
+  .ask {background:#e8f0fe; border:1px solid #d2e3fc; border-radius:12px;
+        padding:13px 16px; margin:4px 0 8px;}
+  /* the Photos search field: a grey pill that turns white and lifts on focus */
+  div[data-testid="stTextInput"] input {
+        background:#f1f3f4; border:1px solid transparent; border-radius:24px;
+        padding:11px 20px; font-size:15px; color:#202124;}
+  div[data-testid="stTextInput"] input:focus {
+        background:#fff; box-shadow:0 1px 6px rgba(32,33,36,.28);}
   div[data-testid="stImage"] img {border-radius:8px;}
+  .stButton button {border-radius:18px; font-size:13px; font-weight:500;
+        border:1px solid #dadce0; color:#3c4043;}
+  .stButton button:hover {background:#f1f3f4; border-color:#dadce0; color:#1967d2;}
+  /* the per-result reject trigger sits under a caption, so it matches it */
+  div[data-testid="stPopover"] button {font-size:13px; border-radius:18px;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -78,8 +116,11 @@ def ask_query(text):
 
 
 # ------------------------------------------------------------------- header -
-st.markdown("### You Know The One")
-st.markdown('<p class="lede">That photo you can half remember. Say what you have got, and you will see what the app understood before it searches.</p>', unsafe_allow_html=True)
+st.markdown(f'<div class="brand">{PINWHEEL}<h1>Tip of My Tongue</h1></div>',
+            unsafe_allow_html=True)
+st.markdown('<p class="lede">The photo you can half remember. Say what you have '
+            'got, and see what the app understood before it searches.</p>',
+            unsafe_allow_html=True)
 
 q = st.text_input("Search your photos", value=S.q,
                   placeholder="the bill from that dinner · somewhere near a waterfall · my sister at the wedding",
