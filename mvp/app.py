@@ -1,4 +1,8 @@
-"""The Composer — say what you remember, see what the app understood.
+"""You Know The One — say what you remember, see what the app understood.
+
+The name is the point. "Show me that photo, you know the one" is how people
+actually ask each other, and it is exactly the state this product is built for:
+you are sure it exists, you can half describe it, and that is all.
 
 Run locally:  streamlit run mvp/app.py
 
@@ -38,7 +42,7 @@ import search as searchmod     # noqa: E402
 import thumbs                  # noqa: E402
 from library import LIBRARY, TODAY  # noqa: E402
 
-st.set_page_config(page_title="The Composer", page_icon="🔎", layout="wide")
+st.set_page_config(page_title="You Know The One", page_icon="🔎", layout="wide")
 
 st.markdown("""
 <style>
@@ -74,9 +78,8 @@ def ask_query(text):
 
 
 # ------------------------------------------------------------------- header -
-st.markdown("### The Composer")
-st.markdown('<p class="lede">Say what you remember. You will see what the app '
-            'understood before it searches.</p>', unsafe_allow_html=True)
+st.markdown("### You Know The One")
+st.markdown('<p class="lede">That photo you can half remember. Say what you have got, and you will see what the app understood before it searches.</p>', unsafe_allow_html=True)
 
 q = st.text_input("Search your photos", value=S.q,
                   placeholder="the bill from that dinner · somewhere near a waterfall · my sister at the wedding",
