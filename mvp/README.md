@@ -10,6 +10,10 @@ surface for Photos while reading the interaction as new.
 One change to photo search: **show the person what you understood before you
 search, hold the uncertain parts loosely, and ask once.**
 
+**Live: https://tip-of-my-tongue.streamlit.app**
+
+Or run it locally:
+
 ```bash
 pip install -r mvp/requirements.txt
 streamlit run mvp/app.py
@@ -114,10 +118,14 @@ python mvp/thumbs.py
 
 Streamlit Community Cloud, free tier:
 
+Deployed from this repo, `main`, entry point `mvp/app.py`, no secrets set --
+it runs on the built-in reader on purpose, so the link cannot die on a quota.
+
+To redeploy elsewhere:
+
 1. Push to a public GitHub repo.
 2. New app, pointed at `mvp/app.py`.
 3. Optional: Settings, then Secrets, then `GEMINI_API_KEY = "..."`.
-   Leave it out and it runs on the built-in reader.
 
 `pillow` is now in both `requirements.txt` files. It has to be: Streamlit Cloud
 reads the root one by default, and without Pillow the app cannot render a
