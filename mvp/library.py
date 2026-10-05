@@ -35,6 +35,10 @@ def _i(id, d, kind, title, desc, *, people=(), place="", venue="", setting="",
         "setting": setting, "event": event, "text": text,
         "tags": list(tags), "bw": bw,
         "tod": tod, "crowd": crowd or ("nobody" if not people else "a few"),
+        # which stock photo of this scene to draw. Set per repeat in
+        # _filler_items so four "Hill station viewpoint" items get four
+        # different pictures instead of colliding on a hash.
+        "variant": 0,
     }
 
 
@@ -234,12 +238,14 @@ def _filler_items():
             # Paperwork does not have people in it. Only hand-authored items
             # (a shared restaurant bill) carry people, and they do it on purpose.
             people = [] if kind in (DOC, SHOT) else _PEOPLE_CYCLE[(round_ + j) % len(_PEOPLE_CYCLE)]
-            out.append(_i(
+            it = _i(
                 f"f{n:03d}", d.isoformat(), kind, title,
                 f"{title}. Ordinary day, nothing written down about it.",
                 people=people, place=place, setting=setting, event=event,
                 tags=tags,
-            ))
+            )
+            it["variant"] = round_      # a different picture on each repeat
+            out.append(it)
     return out
 
 
@@ -257,6 +263,13 @@ def load():
             # spread the filler so a question about either actually splits it
             it["tod"] = _TODS[k % 4]
             it["crowd"] = "nobody" if not it["people"] else _CROWDS[1 + (k % 3)]
+        # If the title already says when it was, that wins. A tester caught
+        # "Fog on the morning drive" filed under night, and was right to stop
+        # trusting the rest of the metadata after seeing it.
+        for word in _TODS:
+            if word in it["title"].lower():
+                it["tod"] = word
+                break
     items.sort(key=lambda x: x["date"], reverse=True)
     return items
 

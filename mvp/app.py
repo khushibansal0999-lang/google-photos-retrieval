@@ -102,6 +102,7 @@ st.markdown("""
 
 S = st.session_state
 S.setdefault("q", "")
+S.setdefault("qbox", "")
 S.setdefault("year", None)
 S.setdefault("narrow", None)
 S.setdefault("asked", [])       # dimensions already used, so we never repeat one
@@ -115,6 +116,22 @@ def ask_query(text):
     S.asked, S.level, S.rejected, S.note = [], {}, [], ""
 
 
+def use_example(text):
+    """Load an example into the box.
+
+    This has to run as an on_click callback, not inline after the button. The
+    search box owns the key "qbox", and Streamlit refuses to let you write to a
+    widget's key once that widget has been drawn this run. Callbacks fire
+    before the script re-runs, which is the only moment the write is legal.
+
+    Getting this wrong is what a tester hit: they clicked an example, typed
+    their own search, pressed Enter, and watched their words vanish and the
+    example come back. They assumed the app was broken, and they were right to.
+    """
+    S.qbox = text
+    ask_query(text)
+
+
 # ------------------------------------------------------------------- header -
 st.markdown(f'<div class="brand">{PINWHEEL}<h1>Tip of My Tongue</h1></div>',
             unsafe_allow_html=True)
@@ -122,22 +139,22 @@ st.markdown('<p class="lede">The photo you can half remember. Say what you have 
             'got, and see what the app understood before it searches.</p>',
             unsafe_allow_html=True)
 
-q = st.text_input("Search your photos", value=S.q,
-                  placeholder="the bill from that dinner · somewhere near a waterfall · my sister at the wedding",
-                  label_visibility="collapsed")
-if q != S.q:
-    ask_query(q)
+st.text_input("Search your photos", key="qbox",
+              placeholder="the bill from that dinner · somewhere near a waterfall · my sister at the wedding",
+              label_visibility="collapsed")
+if S.qbox != S.q:
+    ask_query(S.qbox)
 
 e1, e2, e3, _ = st.columns([1.4, 1.7, 1.3, 2.0])
 with e1:
-    if st.button("Several clues", use_container_width=True):
-        ask_query("restaurant bill, dinner with friends, around a year ago")
+    st.button("Several clues", use_container_width=True, on_click=use_example,
+              args=("restaurant bill, dinner with friends, around a year ago",))
 with e2:
-    if st.button("The question  ←  watch this", use_container_width=True):
-        ask_query("bill from last august")
+    st.button("The question  ←  watch this", use_container_width=True,
+              on_click=use_example, args=("bill from last august",))
 with e3:
-    if st.button("A near miss", use_container_width=True):
-        ask_query("something from the trip")
+    st.button("A near miss", use_container_width=True, on_click=use_example,
+              args=("something from the trip",))
 
 # --------------------------------------------------------------- home page --
 if not S.q.strip():
@@ -178,6 +195,16 @@ if "date" not in kept:
 
 ans = searchmod.answer(LIBRARY, live, year_override=S.year, narrow=S.narrow)
 res = ans["results"]
+
+# Re-label the chips from what the search actually ran on. When someone answers
+# "which August?", the date stops being a guess, and the screen has to say so.
+# Leaving it reading "year unknown" after they just told us the year is the
+# precise failure this whole product is an argument against -- a tester caught
+# us doing it, which was fair.
+resolved = {c["field"]: c for c in cuemod.to_chips(ans["cues"])}
+all_chips = [resolved.get(c["field"], c) if c["field"] == "date" else c
+             for c in all_chips]
+
 for rid, reason in S.rejected:
     item = next((i for i in LIBRARY if i["id"] == rid), None)
     if item:

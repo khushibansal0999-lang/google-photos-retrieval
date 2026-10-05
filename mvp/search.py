@@ -105,27 +105,63 @@ def score(it, cues):
     if cues["bw"] and it["bw"]:
         pts += W_BW; why.append("black and white")
 
+    other = pts          # everything the person said that was not about when
+    hits = len(why)      # how many separate things they said this photo matches
     dp, in_win = _date_score(it, cues.get("date"))
     if dp > 0:
         pts += dp
+        hits += 1
         d = cues["date"]
         why.append(it["date"][:7] if d["confidence"] >= 0.8 else f"near {it['date'][:7]}")
-    return pts, in_win, why
+    return pts, in_win, why, other, hits
 
 
-def run(items, cues, year_override=None, floor=None):
-    """Rank the library. Only a confident date cue is ever allowed to exclude."""
+def _cue_count(cues):
+    """How many separate things the person told us."""
+    n = len(cues["content"]) + len(cues["people"])
+    for f in ("place", "setting", "kind"):
+        n += 1 if cues[f] else 0
+    n += 1 if cues["bw"] else 0
+    n += 1 if cues.get("date") else 0
+    return n
+
+
+def _non_date_cues(cues):
+    """Did the person tell us anything other than when it was?"""
+    return bool(cues["content"] or cues["people"] or cues["place"]
+                or cues["setting"] or cues["kind"] or cues["bw"])
+
+
+def run(items, cues, year_override=None, floor=None, need_hits=1):
+    """Rank the library. Only a confident date cue is ever allowed to exclude.
+
+    need_hits is how many of the person's cues a photo has to match. Asking for
+    two is what stops "my sister at the wedding" returning thirty photos that
+    merely have a sister in them. It is a preference, not a rule: answer() drops
+    back to one when two leaves too little to look at.
+    """
     floor = FLOOR if floor is None else floor
     d = cues.get("date")
     hard_date = bool(d) and d["confidence"] >= 0.8
 
+    # A date that narrows must not become the only reason a photo is here. A
+    # tester asked for a bill in August 2025 and got cricket and a vegetable
+    # market, because landing in the right month scored enough on its own.
+    # If the person told us anything besides when, that part has to match too.
+    date_narrows = hard_date or year_override is not None
+    needs_more = date_narrows and _non_date_cues(cues)
+
     out = []
     for it in items:
-        pts, in_win, why = score(it, cues)
+        pts, in_win, why, other, hits = score(it, cues)
         if hard_date and not in_win:
             continue                      # confident date: a real filter
         if year_override is not None and not it["date"].startswith(str(year_override)):
             continue                      # the user answered our question
+        if needs_more and other <= 0:
+            continue                      # in the right month, but nothing else
+        if hits < need_hits:
+            continue                      # matched less of the query than we want
         if pts < floor:
             continue          # one weak brush against one word is not a result
         out.append({"item": it, "score": round(pts, 2), "why": why})
@@ -298,6 +334,22 @@ def reject(results, item, reason):
     return out, notes
 
 
+def _clear_winner(results):
+    """Is one photo plainly ahead of everything else?
+
+    A tester searched "my sister at the wedding", got the right photo at the
+    top, and was then asked whether they had been indoors or outdoors. The
+    question was not wrong, it was late: they had already found it. A question
+    earns its place by splitting a field of candidates, so when there is no
+    real field left we say nothing.
+    """
+    if not results:
+        return False
+    if len(results) == 1:
+        return True
+    return results[0]["score"] >= max(GOOD * 0.75, results[1]["score"] * 1.5)
+
+
 def verdict(results):
     """"empty" means we have nothing at all. Anything we do have is a near miss
     worth showing, because a screen with three wrong photos on it is still more
@@ -328,9 +380,27 @@ def answer(items, cues, year_override=None, narrow=None):
                         "year": year_override, "confidence": 1.0,
                         "text": cues["date"]["text"]}
 
-    res = run(items, cues)
-    if verdict(res) != "confident":
-        res = run(items, cues, floor=0.75)
+    # Widen in steps, and only as far as we have to. When the person gave us
+    # two or more cues we first ask for photos that match at least two of them;
+    # one cue out of three is a near miss, and thirty near misses is a wall.
+    # Each step is only taken because the one before it came up short.
+    want = 2 if _cue_count(cues) >= 2 else 1
+    res = run(items, cues, need_hits=want)
+
+    def top_up(pool, upto=8):
+        """Add weaker matches underneath, but only enough to fill the screen.
+
+        Topping up rather than replacing is the point. Two photos that match
+        both of your cues are worth more than thirty that match one, so the
+        two stay at the top and we borrow just enough to look at.
+        """
+        have = {r["item"]["id"] for r in res}
+        return res + [r for r in pool if r["item"]["id"] not in have][:max(0, upto - len(res))]
+
+    if len(res) < 8:
+        res = top_up(run(items, cues, need_hits=1))
+    if len(res) < 4 and verdict(res) != "confident":
+        res = top_up(run(items, cues, floor=0.75, need_hits=1))
     if narrow:
         res = apply_narrowing(res, *narrow)
 
@@ -338,6 +408,9 @@ def answer(items, cues, year_override=None, narrow=None):
     ask = None
     if not answered:
         ask = ambiguity(res, cues)
-        if ask is None and v != "confident":
+        if ask is None and v != "confident" and not _clear_winner(res):
             ask = narrowing(res, cues)
-    return {"results": res, "verdict": v, "ask": ask}
+    # cues goes back out because the person may have just resolved one of them,
+    # and the screen has to say so. Showing "year unknown" after they told us
+    # the year is the exact failure this product exists to argue against.
+    return {"results": res, "verdict": v, "ask": ask, "cues": cues}

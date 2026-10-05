@@ -138,7 +138,10 @@ def _scene(item):
     files = _variants(_slug(item["title"]))
     if not files:
         return None
-    path = files[_seed(item) % len(files)]
+    # Indexed, not hashed. Hashing four items into four pictures collides most
+    # of the time -- a tester saw "Hill station viewpoint" four times with the
+    # same photo, and said it made them trust the whole library less.
+    path = files[item.get("variant", 0) % len(files)]
     try:
         return Image.open(path).convert("RGB").resize((W, H), Image.LANCZOS)
     except Exception:                       # noqa: BLE001 -- a bad file is not fatal
@@ -159,16 +162,18 @@ def render(item):
 
 
 @lru_cache(maxsize=256)
-def _png(key, kind, title, bw):
+def _png(key, kind, title, bw, variant):
     buf = BytesIO()
-    render({"id": key, "kind": kind, "title": title, "bw": bw}).save(
+    render({"id": key, "kind": kind, "title": title, "bw": bw,
+            "variant": variant}).save(
         buf, format="JPEG", quality=82, optimize=True)
     return buf.getvalue()
 
 
 def png(item):
     # cached on the fields render actually reads, so the grid is cheap to redraw
-    return _png(item["id"], item["kind"], item["title"], bool(item.get("bw")))
+    return _png(item["id"], item["kind"], item["title"], bool(item.get("bw")),
+                item.get("variant", 0))
 
 
 if __name__ == "__main__":
