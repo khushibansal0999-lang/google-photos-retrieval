@@ -92,6 +92,21 @@ st.markdown("""
   div[data-testid="stTextInput"] input:focus {
         background:#fff; box-shadow:0 1px 6px rgba(32,33,36,.28);}
   div[data-testid="stImage"] img {border-radius:8px;}
+  /* Cap the result thumbnails. Those still use st.columns because each card
+     carries a "Not this one" control, and a stacked column would otherwise
+     stretch a 300px drawing across the whole screen. Streamlit injects its own
+     emotion styles after this block and sets max-width:100% on the image, so
+     the cap goes on the container and needs !important or it loses the
+     cascade. */
+  div[data-testid="stImageContainer"],
+  div[data-testid="stImageContainer"] > img {
+        max-width:220px !important; margin-left:auto; margin-right:auto;}
+  .grid {display:grid; gap:14px; margin-top:4px;
+         grid-template-columns:repeat(auto-fill, minmax(118px, 1fr));}
+  .grid figure {margin:0;}
+  .grid img {width:100%; aspect-ratio:1; object-fit:cover; border-radius:8px;
+             display:block;}
+  .grid figcaption {font-size:11.5px; color:#5f6368; margin-top:4px;}
   .stButton button {border-radius:18px; font-size:13px; font-weight:500;
         border:1px solid #dadce0; color:#3c4043;}
   .stButton button:hover {background:#f1f3f4; border-color:#dadce0; color:#1967d2;}
@@ -163,11 +178,16 @@ if not S.q.strip():
     st.caption(f"{len(LIBRARY)} items, {LIBRARY[-1]['date'][:4]}–{LIBRARY[0]['date'][:4]}. "
                "A demo library seeded with the retrieval failures that came out of the "
                "research, so the things that break here are things that broke for real people.")
-    for start in range(0, 18, 6):
-        for col, it in zip(st.columns(6), LIBRARY[start:start + 6]):
-            with col:
-                st.image(thumbs.png(it), use_container_width=True)
-                st.markdown(f'<span class="meta">{it["date"]}</span>', unsafe_allow_html=True)
+    # One real CSS grid, not st.columns. Streamlit stacks columns below about
+    # 640px, and a stacked column makes every thumbnail full-bleed -- a tester
+    # saw a drawn phone blown up to the width of the screen, sitting in a field
+    # of grey, and read it as empty space. auto-fill reflows instead: six across
+    # on a laptop, two or three on a phone, never one enormous one.
+    cells = "".join(
+        f'<figure class="g-cell"><img src="data:image/jpeg;base64,{thumbs.b64(it)}" '
+        f'alt="{it["title"]}"><figcaption>{it["date"]}</figcaption></figure>'
+        for it in LIBRARY[:24])
+    st.markdown(f'<div class="grid">{cells}</div>', unsafe_allow_html=True)
     st.stop()
 
 # ------------------------------------------------------------------ search --

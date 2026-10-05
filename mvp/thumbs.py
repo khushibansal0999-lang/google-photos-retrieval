@@ -14,6 +14,7 @@ label -- which the interface is relying on.
 If mvp/scenes/ is missing or incomplete, every item falls back to the drawn
 version and the app still runs. Nobody should meet a broken image.
 """
+import base64
 import hashlib
 import re
 from functools import lru_cache
@@ -300,6 +301,27 @@ def png(item):
     # cached on the fields render actually reads, so the grid is cheap to redraw
     return _png(item["id"], item["kind"], item["title"], bool(item.get("bw")),
                 item.get("variant", 0))
+
+
+@lru_cache(maxsize=256)
+def _small(key, kind, title, bw, variant, px):
+    buf = BytesIO()
+    render({"id": key, "kind": kind, "title": title, "bw": bw,
+            "variant": variant}).resize((px, px), Image.LANCZOS).save(
+        buf, format="JPEG", quality=74, optimize=True)
+    return base64.b64encode(buf.getvalue()).decode("ascii")
+
+
+def b64(item, px=150):
+    """Base64 for embedding straight into a CSS grid.
+
+    Rendered small on purpose. The home grid inlines two dozen of these into
+    the HTML, and at full size that was 400KB before the page could paint --
+    on a cold Streamlit boot a tester already sat through ten seconds of
+    spinner, so this is not the place to spend bytes.
+    """
+    return _small(item["id"], item["kind"], item["title"],
+                  bool(item.get("bw")), item.get("variant", 0), px)
 
 
 if __name__ == "__main__":
