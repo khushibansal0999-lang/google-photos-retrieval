@@ -214,6 +214,24 @@ _FILLER = [
      ["cricket", "children", "street", "play"], [""]),
     ("Market stall, vegetables stacked", PHOTO, "outdoor", "",
      ["market", "vegetables", "food", "street"], [""]),
+    # Added after user testing: three testers all said the library felt thin,
+    # and a thin library makes the retrieval problem look easier than it is.
+    ("Snow up north", PHOTO, "outdoor", "holiday",
+     ["snow", "mountains", "cold", "travel"], ["Manali", "Shimla"]),
+    ("Festival lights down the street", PHOTO, "outdoor", "festival",
+     ["festival", "lights", "diwali", "night", "street", "celebration"], [""]),
+    ("Boat on the backwaters", PHOTO, "outdoor", "holiday",
+     ["boat", "river", "water", "trip", "travel"], ["Kerala", "Goa"]),
+    ("Bridge at dusk", PHOTO, "outdoor", "",
+     ["bridge", "dusk", "river", "city", "evening"], ["Bengaluru"]),
+    ("Kitten behind the shop", PHOTO, "outdoor", "",
+     ["kitten", "cat", "animal", "street"], [""]),
+    ("Breakfast at the hotel", PHOTO, "indoor", "holiday",
+     ["breakfast", "food", "hotel", "travel", "morning"], ["Udaipur", "Goa"]),
+    ("Cycling on the ring road", PHOTO, "outdoor", "",
+     ["bicycle", "cycling", "road", "exercise"], ["Bengaluru"]),
+    ("Leaves turning in the park", PHOTO, "outdoor", "",
+     ["autumn", "leaves", "park", "trees", "green"], [""]),
 ]
 
 _PEOPLE_CYCLE = [[], ["friends"], ["sister"], ["family"], ["friends", "sister"], []]

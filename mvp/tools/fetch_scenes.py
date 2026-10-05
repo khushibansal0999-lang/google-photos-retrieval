@@ -71,12 +71,22 @@ SCENES = {
     "New shoes, still in the box":       ("shoes", VARIANTS),
     "Kids playing cricket in the lane":  ("children playing", VARIANTS),
     "Market stall, vegetables stacked":  ("market vegetables", VARIANTS),
+    # added after user testing, to thicken the library
+    "Snow up north":                     ("snow mountains", VARIANTS),
+    "Festival lights down the street":   ("festival lights", VARIANTS),
+    "Boat on the backwaters":            ("boat river", VARIANTS),
+    "Bridge at dusk":                    ("bridge dusk", VARIANTS),
+    "Kitten behind the shop":            ("kitten", VARIANTS),
+    "Breakfast at the hotel":            ("breakfast table", VARIANTS),
+    "Cycling on the ring road":          ("bicycle", VARIANTS),
+    "Leaves turning in the park":        ("autumn leaves park", VARIANTS),
     # planted items: these appear once each
     "Sister at the wedding, evening":    ("bride wedding", 1),
     "Group shot at the wedding":         ("wedding celebration", 1),
     "Small cafe on the Goa trip":        ("coffee shop", 1),
     "Waterfall, somewhere off the highway": ("waterfall forest", 1),
     "Roadside tea stall on the way back": ("tea", 1),
+    "Medicine strip":                    ("pills medicine", 1),
     "Childhood photo, scanned":          ("kids bike", 1),
     "Childhood photo, birthday":         ("birthday cake candles", 1),
 }

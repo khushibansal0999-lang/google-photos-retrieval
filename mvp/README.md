@@ -90,7 +90,7 @@ what kind each result is without reading the label, which the interface leans
 on. If `scenes/` is missing, everything falls back to the drawn version and the
 app still runs.
 
-**The library is seeded, and seeded honestly.** 132 items across 1998–2026,
+**The library is seeded, and seeded honestly.** 164 items across 1998–2026,
 carrying failures that came out of the research: two bills in different Augusts,
 an ID card, a recovery-codes screenshot, black-and-white childhood photos with
 no usable metadata, and a waterfall nobody wrote the location down for.
@@ -102,7 +102,7 @@ no usable metadata, and a waterfall nobody wrote the location down for.
 | `app.py` | the Streamlit interface |
 | `cues.py` | sentence to cues with confidences. Gemini + rule-based fallback |
 | `search.py` | scoring, the ambiguity check, narrowing questions, the near-miss loop |
-| `library.py` | the 132-item demo library |
+| `library.py` | the 164-item demo library |
 | `thumbs.py` | thumbnails: the CC0 photo if there is one, else drawn |
 | `scenes/` | the CC0 photos, plus `CREDITS.md` |
 | `tools/fetch_scenes.py` | refills `scenes/`. Run by hand, never by the app |
@@ -135,7 +135,7 @@ The free tier sleeps after inactivity, so open the link once before sharing it.
 
 ## Limits, stated plainly
 
-- A seeded 132-item library is not a real 75,000-item one. Ambiguity is rarer in
+- A seeded 164-item library is not a real 75,000-item one. Ambiguity is rarer in
   a small library, which flatters these results. This is on the risk slide.
 - Scoring is transparent keyword and metadata matching, not embeddings. That is
   deliberate for a prototype whose argument is about interaction rather than

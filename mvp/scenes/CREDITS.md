@@ -92,10 +92,43 @@ Regenerate with `python mvp/tools/fetch_scenes.py`.
 | Market stall, vegetables stacked | [Fruits Vegetables](https://stocksnap.io/photo/fruits-vegetables-AA39511B59) | Leeroy | CC0 |
 | Market stall, vegetables stacked | [Red Chilipeppers](https://stocksnap.io/photo/red-chilipeppers-AV9AM2XCTZ) | Jonathan Niederhoffer | CC0 |
 | Market stall, vegetables stacked | [Market Fruits](https://stocksnap.io/photo/market-fruits-VBQSBXBAO8) | Agnieszka Wal%u0119dziak | CC0 |
+| Snow up north | [Snow Mountain](https://stocksnap.io/photo/snow-mountain-6DC0ERNTN3) | Tyler Lastovich | CC0 |
+| Snow up north | [Snow Mountain](https://stocksnap.io/photo/snow-mountain-0KHG3WOP1F) | Burst | CC0 |
+| Snow up north | [Snow Mountain](https://stocksnap.io/photo/snow-mountain-KWMYJNGPAH) | Bernard Spragg | CC0 |
+| Snow up north | [Snow Mountain](https://stocksnap.io/photo/snow-mountain-1UH8DAMKE5) | Tyler Lastovich | CC0 |
+| Festival lights down the street | [Festive Lights](https://stocksnap.io/photo/festive-lights-R2GG6XFPOM) | Tricia Gray | CC0 |
+| Festival lights down the street | [Christmas Xmas](https://stocksnap.io/photo/christmas-xmas-EI32JIXJ7Q) | Element5 Digital | CC0 |
+| Festival lights down the street | [Christmas Xmas](https://stocksnap.io/photo/christmas-xmas-FMUEJKZBRH) | Element5 Digital | CC0 |
+| Festival lights down the street | [Christmas Gnome](https://stocksnap.io/photo/christmas-gnome-ZJSI6MSWBQ) | Travel Photographer | CC0 |
+| Boat on the backwaters | [Boats River](https://stocksnap.io/photo/boats-river-8MM53A4LBA) | Dan Chung | CC0 |
+| Boat on the backwaters | [Working Outdoors](https://stocksnap.io/photo/working-outdoors-KMH50GPZQ9) | Dave Meier | CC0 |
+| Boat on the backwaters | [Nature Landscape](https://stocksnap.io/photo/nature-landscape-41VLTI0L65) | Paul Gilmore | CC0 |
+| Boat on the backwaters | [Bangkok Thailand](https://stocksnap.io/photo/bangkok-thailand-E1NZUYG3AU) | Christopher Gimmer | CC0 |
+| Bridge at dusk | [Gatineau Ottawa](https://stocksnap.io/photo/gatineau-ottawa-PXN5DZXEPC) | Nick Le | CC0 |
+| Bridge at dusk | [Sunset Dusk](https://stocksnap.io/photo/sunset-dusk-92WCDB5VMF) | Anders Jildén | CC0 |
+| Bridge at dusk | [Sunset Dusk](https://stocksnap.io/photo/sunset-dusk-YBCBJDJPDE) | Negative Space | CC0 |
+| Bridge at dusk | [Bridge Architecture](https://stocksnap.io/photo/bridge-architecture-1D6KCNP75D) | Anders Jildén | CC0 |
+| Kitten behind the shop | [Kitten Animal](https://stocksnap.io/photo/kitten-animal-H7SQ64KL6T) | Ghost Presenter | CC0 |
+| Kitten behind the shop | [Cat Kitten](https://stocksnap.io/photo/cat-kitten-0A5CNJCGRF) | Nirzar Pangarkar | CC0 |
+| Kitten behind the shop | [Cat Kitten](https://stocksnap.io/photo/cat-kitten-UMHZOPF4CJ) | Andrew Branch | CC0 |
+| Kitten behind the shop | [Cat Kitten](https://stocksnap.io/photo/cat-kitten-BY1YIGNS0Y) | Ghost Presenter | CC0 |
+| Breakfast at the hotel | [Breakfast Table](https://stocksnap.io/photo/breakfast-table-BT5N1WHKER) | Matt Bango | CC0 |
+| Breakfast at the hotel | [Breakfast Table](https://stocksnap.io/photo/breakfast-table-ICNU11Y45B) | Matt Bango | CC0 |
+| Breakfast at the hotel | [Breakfast Food](https://stocksnap.io/photo/breakfast-food-OC8WX0E0X3) | Ali Inay | CC0 |
+| Breakfast at the hotel | [People Food](https://stocksnap.io/photo/people-food-PRQVLFBST1) | Daria Shevtsova | CC0 |
+| Cycling on the ring road | [Speedbike Bicycle](https://stocksnap.io/photo/speedbike-bicycle-6B6C7FF9C1) | Paul Filitchkin | CC0 |
+| Cycling on the ring road | [Bike Bicycle](https://stocksnap.io/photo/bike-bicycle-QGS22ZDL4M) | Michal Kulesza | CC0 |
+| Cycling on the ring road | [Bicycle Bike](https://stocksnap.io/photo/bicycle-bike-Y2KCFMGHD1) | Alisa Anton | CC0 |
+| Cycling on the ring road | [Bike Bicycle](https://stocksnap.io/photo/bike-bicycle-J4D7AJ8YU0) | Huney Co | CC0 |
+| Leaves turning in the park | [Romantic Park](https://stocksnap.io/photo/romantic-park-FIGLTLWW8E) | Dana Tentis | CC0 |
+| Leaves turning in the park | [Leaves Fall](https://stocksnap.io/photo/leaves-fall-J405LO4B6Y) | Scott Webb | CC0 |
+| Leaves turning in the park | [Trees Forest](https://stocksnap.io/photo/trees-forest-8SDKBCVSCM) | Lukasz Szmigiel | CC0 |
+| Leaves turning in the park | [Park Forest](https://stocksnap.io/photo/park-forest-3K6AA85P52) | Pawel Kadysz | CC0 |
 | Sister at the wedding, evening | [Bride Wedding](https://stocksnap.io/photo/bride-wedding-121CFQQ5ZM) | Scott Webb | CC0 |
 | Group shot at the wedding | [Wedding Celebration](https://stocksnap.io/photo/wedding-celebration-MLZK9UI7Y7) | Ivan | CC0 |
 | Small cafe on the Goa trip | [Coffee Shop](https://stocksnap.io/photo/coffee-shop-CYWVWT28TI) | Jordan Sanchez | CC0 |
 | Waterfall, somewhere off the highway | [Waterfall Forest](https://stocksnap.io/photo/waterfall-forest-I9KYDCMQK0) | Bonnie Moreland | CC0 |
 | Roadside tea stall on the way back | [Coffee Tea](https://stocksnap.io/photo/coffee-tea-4VHE7E68OE) | Lia Leslie | CC0 |
+| Medicine strip | [Pills Medicine](https://stocksnap.io/photo/pills-medicine-TPI078T0IS) | Martin Vorel | CC0 |
 | Childhood photo, scanned | [Kids Bike](https://stocksnap.io/photo/kids-bike-TIDFS7VDFA) | Matt Bango | CC0 |
 | Childhood photo, birthday | [Events Birthday](https://stocksnap.io/photo/events-birthday-7XQHYBOHLC) | Freestocks.org | CC0 |
