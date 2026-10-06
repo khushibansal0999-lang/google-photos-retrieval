@@ -86,133 +86,176 @@ def _paper_kind(item):
     return "form"
 
 
-PAPER  = (252, 252, 252)
-DESK   = (232, 233, 236)
-INK    = (96, 102, 110)
-FAINT  = (198, 201, 206)
-MID    = (158, 162, 169)
+# Paperwork is drawn, and the drawing has to earn its place in a grid of real
+# photographs. The first version was pale grey on pale grey and ignored its own
+# seed, so every bill came out pixel-identical and the grid read as a row of
+# empty placeholders. Everything below is driven by the seed: paper tone, brand
+# colour, how many lines, where they break. Two bills now look like two bills.
+PAPER = (253, 252, 250)
+DESK  = (228, 229, 233)
+INK   = (62, 68, 78)
+MID   = (126, 132, 142)
+FAINT = (176, 181, 189)
+
+# plausible letterhead colours. No red: red means "wrong" everywhere else here.
+BRAND = [(38, 82, 148), (22, 104, 92), (86, 54, 122), (150, 92, 28),
+         (40, 54, 74), (16, 92, 130), (112, 48, 70), (54, 86, 36)]
 
 
-def _lines(draw, x, y, w, widths, gap=20, h=8, dark=MID, light=FAINT):
+def _tone(s, n=4):
+    """A slightly different paper white per item, so a stack is not one block."""
+    k = (s >> 9) % n
+    return tuple(c - k * 3 for c in PAPER)
+
+
+def _rule(draw, x, y, w, widths, gap, h=7, dark=MID, light=FAINT, every=3):
     for i, f in enumerate(widths):
-        draw.rectangle([x, y, x + int(w * f), y + h], fill=dark if i % 3 == 0 else light)
+        draw.rectangle([x, y, x + int(w * f), y + h],
+                       fill=dark if i % every == 0 else light)
         y += gap
     return y
 
 
+def _widths(s, n):
+    """Line lengths that differ per item but never look random."""
+    out, v = [], s
+    for _ in range(n):
+        v = (v * 1103515245 + 12345) & 0x7FFFFFFF
+        out.append(0.42 + (v % 60) / 100)
+    return out
+
+
 def _receipt(draw, s):
-    """A till receipt: narrow, torn at the foot, with a total that stands out."""
+    """A till receipt: narrow, torn foot, a total that stands out."""
+    brand = BRAND[s % len(BRAND)]
     draw.rectangle([0, 0, W, H], fill=DESK)
-    x0, x1 = 78, W - 78
-    draw.rectangle([x0, 10, x1, H - 26], fill=PAPER)
-    for i in range(0, (x1 - x0) // 10):       # torn edge along the bottom
-        draw.polygon([(x0 + i * 10, H - 26), (x0 + i * 10 + 5, H - 14),
-                      (x0 + i * 10 + 10, H - 26)], fill=PAPER)
-    draw.rectangle([x0 + 24, 30, x1 - 24, 42], fill=INK)
-    y = _lines(draw, x0 + 20, 62, x1 - x0 - 40, [.9, .62, .84, .55, .78, .46, .7], gap=19, h=7)
-    draw.line([x0 + 20, y + 4, x1 - 20, y + 4], fill=MID, width=2)
-    draw.rectangle([x0 + 20, y + 16, x0 + 70, y + 30], fill=INK)      # TOTAL
-    draw.rectangle([x1 - 92, y + 16, x1 - 20, y + 30], fill=INK)
+    x0, x1 = 74 + (s % 3) * 6, W - 74 - (s % 3) * 6
+    draw.rectangle([x0, 8, x1, H - 24], fill=_tone(s))
+    for i in range((x1 - x0) // 10 + 1):
+        draw.polygon([(x0 + i * 10, H - 24), (x0 + i * 10 + 5, H - 11),
+                      (x0 + i * 10 + 10, H - 24)], fill=_tone(s))
+    draw.ellipse([(x0 + x1) // 2 - 13, 22, (x0 + x1) // 2 + 13, 48], fill=brand)
+    n = 5 + (s >> 3) % 4
+    y = _rule(draw, x0 + 18, 64, x1 - x0 - 36, _widths(s, n), gap=18, h=6)
+    draw.line([x0 + 18, y + 5, x1 - 18, y + 5], fill=MID, width=2)
+    draw.rectangle([x0 + 18, y + 16, x0 + 62, y + 29], fill=INK)
+    draw.rectangle([x1 - 76, y + 16, x1 - 18, y + 29], fill=brand)
 
 
 def _pass(draw, s):
     """A boarding pass: landscape, a tear-off stub, a barcode."""
+    brand = BRAND[(s >> 2) % len(BRAND)]
     draw.rectangle([0, 0, W, H], fill=DESK)
-    draw.rounded_rectangle([18, 74, W - 18, H - 74], radius=10, fill=PAPER)
-    draw.rectangle([18, 74, W - 18, 112], fill=(66, 110, 180))
-    cut = W - 104
-    for y in range(80, H - 80, 12):           # perforation
+    draw.rounded_rectangle([16, 70, W - 16, H - 70], radius=10, fill=_tone(s))
+    draw.rectangle([16, 70, W - 16, 110], fill=brand)
+    draw.ellipse([30, 80, 54, 104], fill=(255, 255, 255))
+    cut = W - 100
+    for y in range(76, H - 76, 12):
         draw.line([cut, y, cut, y + 6], fill=FAINT, width=2)
-    _lines(draw, 42, 134, 150, [.95, .6, .85], gap=22, h=8)
-    draw.rectangle([42, 206, 118, 222], fill=INK)
-    for i in range(26):                       # barcode on the stub
-        draw.rectangle([cut + 16 + i * 5, 136, cut + 18 + i * 5 + (i % 3), 212],
-                       fill=INK if i % 2 else MID)
+    _rule(draw, 40, 130, 150, _widths(s, 3), gap=22, h=8)
+    draw.rectangle([40, 204, 118, 220], fill=brand)
+    v = s
+    for i in range(13):          # 13 bars is what fits between the stub and the
+        v = (v * 48271) & 0x7FFFFFFF    # card edge; 24 ran off the side
+        draw.rectangle([cut + 14 + i * 5, 134, cut + 16 + i * 5 + v % 3, 212],
+                       fill=INK if v % 2 else MID)
 
 
 def _card(draw, s):
-    """An ID card: landscape, a portrait box, a couple of fields. No face."""
+    """An ID card: landscape, a portrait box, a chip. No face."""
+    brand = BRAND[(s >> 4) % len(BRAND)]
     draw.rectangle([0, 0, W, H], fill=DESK)
-    draw.rounded_rectangle([26, 68, W - 26, H - 68], radius=12, fill=PAPER)
-    draw.rectangle([26, 68, W - 26, 100], fill=(60, 120, 92))
-    draw.rounded_rectangle([46, 118, 122, 212], radius=6, fill=(214, 217, 222))
-    draw.ellipse([68, 136, 100, 168], fill=(186, 190, 196))          # head
-    draw.pieslice([58, 170, 110, 220], 180, 360, fill=(186, 190, 196))  # shoulders
-    _lines(draw, 140, 126, 120, [.95, .7, .9, .55], gap=22, h=8)
+    draw.rounded_rectangle([24, 66, W - 24, H - 66], radius=12, fill=_tone(s))
+    draw.rectangle([24, 66, W - 24, 100], fill=brand)
+    draw.rounded_rectangle([44, 116, 120, 212], radius=6, fill=(216, 219, 224))
+    draw.ellipse([66, 134, 98, 166], fill=(178, 183, 190))
+    draw.pieslice([56, 168, 108, 220], 180, 360, fill=(178, 183, 190))
+    draw.rounded_rectangle([W - 90, 180, W - 48, 210], radius=4, fill=(206, 176, 92))
+    _rule(draw, 138, 124, 118, _widths(s, 4), gap=22, h=8)
 
 
 def _invite(draw, s):
     """An invitation: centred, bordered, nothing like a bill."""
+    ink = [(176, 142, 96), (150, 110, 130), (110, 130, 150)][s % 3]
     draw.rectangle([0, 0, W, H], fill=DESK)
-    draw.rectangle([54, 24, W - 54, H - 24], fill=(253, 250, 244))
-    draw.rectangle([70, 40, W - 70, H - 40], outline=(198, 170, 120), width=2)
+    draw.rectangle([50, 20, W - 50, H - 20], fill=(253, 250, 244))
+    draw.rectangle([66, 36, W - 66, H - 36], outline=ink, width=2)
     cx = W // 2
-    for i, (wd, h) in enumerate([(70, 10), (112, 14), (54, 8), (92, 10)]):
+    draw.ellipse([cx - 9, 60, cx + 9, 78], outline=ink, width=2)
+    for i, (wd, h) in enumerate([(74, 9), (116, 14), (58, 8), (96, 9)]):
         y = 96 + i * 34
         draw.rectangle([cx - wd // 2, y, cx + wd // 2, y + h],
-                       fill=(176, 142, 96) if i == 1 else FAINT)
+                       fill=ink if i == 1 else FAINT)
 
 
 def _form(draw, s):
-    """A dense official page: header block, two columns, a signature line."""
+    """A dense official page: letterhead, two columns, a stamp."""
+    brand = BRAND[(s >> 5) % len(BRAND)]
     draw.rectangle([0, 0, W, H], fill=DESK)
-    draw.rectangle([30, 16, W - 30, H - 16], fill=PAPER)
-    draw.rectangle([30, 16, W - 30, 58], fill=INK)
-    draw.rectangle([48, 72, 150, 84], fill=MID)
-    y = 100
-    for row in range(5):
-        draw.rectangle([48, y, 122, y + 7], fill=MID)
-        draw.rectangle([140, y, 140 + int(110 * (0.9 - 0.12 * (row % 4))), y + 7], fill=FAINT)
+    draw.rectangle([28, 14, W - 28, H - 14], fill=_tone(s))
+    draw.rectangle([28, 14, W - 28, 56], fill=brand)
+    draw.rectangle([44, 28, 104, 42], fill=(255, 255, 255))
+    draw.rectangle([46, 70, 150, 82], fill=INK)
+    y, n = 96, 4 + (s >> 6) % 3
+    for i, f in enumerate(_widths(s, n)):
+        draw.rectangle([46, y, 118, y + 7], fill=MID)
+        draw.rectangle([136, y, 136 + int(118 * f), y + 7], fill=FAINT)
         y += 22
-    draw.line([48, H - 54, 140, H - 54], fill=MID, width=2)
+    draw.ellipse([W - 104, H - 104, W - 48, H - 48], outline=brand, width=3)
+    draw.line([46, H - 52, 140, H - 52], fill=MID, width=2)
 
 
 def _document(img, draw, s, item):
-    """Paperwork is drawn, not photographed: a stock photo of a bill is some
-    real person's bill. Each kind gets its own shape so the thumbnail says
-    what sort of thing it is before you read the caption."""
+    """A stock photo of a bill is some real person's bill, so these are drawn.
+    Each kind gets its own shape, read off the item's own tags, so the sort of
+    thing a result is reads before the caption does."""
     {"receipt": _receipt, "pass": _pass, "card": _card,
      "invite": _invite}.get(_paper_kind(item), _form)(draw, s)
 
 
 def _phone(draw, s, body):
-    draw.rectangle([0, 0, W, H], fill=(216, 219, 224))
-    draw.rounded_rectangle([64, 8, W - 64, H - 8], radius=22, fill=(26, 28, 32))
-    draw.rounded_rectangle([74, 22, W - 74, H - 22], radius=14, fill=(250, 250, 251))
-    draw.rectangle([74, 22, W - 74, 56], fill=(60, 110, 180))
-    draw.rectangle([90, 33, 150, 45], fill=(226, 232, 242))
-    body(draw)
+    brand = BRAND[(s >> 7) % len(BRAND)]
+    draw.rectangle([0, 0, W, H], fill=(214, 217, 223))
+    draw.rounded_rectangle([62, 6, W - 62, H - 6], radius=22, fill=(24, 26, 30))
+    draw.rounded_rectangle([72, 20, W - 72, H - 20], radius=14, fill=_tone(s))
+    draw.rectangle([72, 20, W - 72, 56], fill=brand)
+    draw.rectangle([88, 31, 148, 45], fill=(255, 255, 255))
+    body(draw, s, brand)
 
 
-def _shot_rows(draw):
+def _shot_rows(draw, s, brand):
     """A booking or a list: rows with a leading icon."""
     y = 74
-    for i in range(5):
-        draw.rounded_rectangle([90, y, 110, y + 16], radius=4, fill=(206, 212, 222))
-        draw.rectangle([120, y + 3, 120 + int(96 * (0.95 - 0.14 * (i % 4))), y + 11], fill=FAINT)
+    for i, f in enumerate(_widths(s, 5)):
+        draw.rounded_rectangle([88, y, 108, y + 16], radius=4, fill=brand)
+        draw.rectangle([118, y + 3, 118 + int(100 * f), y + 11], fill=FAINT)
         y += 30
 
 
-def _shot_dialog(draw):
+def _shot_dialog(draw, s, brand):
     """A password or a code: a boxed value in the middle of the screen."""
-    draw.rounded_rectangle([92, 104, W - 92, 196], radius=10, fill=(238, 241, 246))
-    draw.rectangle([108, 120, 168, 130], fill=MID)
+    draw.rounded_rectangle([90, 100, W - 90, 200], radius=10, fill=(237, 240, 246))
+    draw.rectangle([106, 116, 170, 127], fill=brand)
+    v = s
     for r in range(3):
         for c in range(2):
-            draw.rectangle([108 + c * 62, 146 + r * 18, 108 + c * 62 + 50, 146 + r * 18 + 10],
-                           fill=(120, 126, 136))
+            v = (v * 48271) & 0x7FFFFFFF
+            draw.rectangle([106 + c * 62, 144 + r * 18,
+                            106 + c * 62 + 38 + v % 14, 144 + r * 18 + 10],
+                           fill=INK)
 
 
 def _board(draw, s):
     """A whiteboard: landscape, sticky notes, not a phone at all."""
-    draw.rectangle([0, 0, W, H], fill=(206, 209, 214))
-    draw.rectangle([22, 44, W - 22, H - 44], fill=(250, 250, 250))
-    draw.rectangle([22, 44, W - 22, H - 44], outline=(170, 174, 180), width=3)
-    notes = [(52, 74, "#FDE293"), (132, 70, "#AECBFA"), (210, 80, "#F6AEA9"),
-             (62, 160, "#A8DAB5"), (150, 152, "#FDE293"), (216, 168, "#AECBFA")]
-    for x, y, col in notes:
-        draw.rectangle([x, y, x + 54, y + 48], fill=col)
-    draw.line([40, 136, W - 40, 136], fill=(200, 203, 208), width=2)
+    draw.rectangle([0, 0, W, H], fill=(204, 207, 213))
+    draw.rectangle([20, 42, W - 20, H - 42], fill=(252, 252, 252))
+    draw.rectangle([20, 42, W - 20, H - 42], outline=(168, 172, 179), width=3)
+    cols = ["#FDE293", "#AECBFA", "#F6AEA9", "#A8DAB5", "#D7AEFB"]
+    v = s
+    for x, y in [(50, 72), (130, 68), (208, 78), (60, 158), (148, 150), (214, 166)]:
+        v = (v * 48271) & 0x7FFFFFFF
+        draw.rectangle([x, y, x + 54, y + 48], fill=cols[v % len(cols)])
+    draw.line([38, 134, W - 38, 134], fill=(198, 201, 207), width=2)
 
 
 def _screenshot(img, draw, s, item):
