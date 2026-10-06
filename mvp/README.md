@@ -87,10 +87,14 @@ committed, so the deployed app depends on nobody else's server. Documents and
 screenshots stay drawn on purpose: a real photograph of a bill or an ID card is
 someone's actual bill or ID card, and the page and phone glyphs let you see
 what kind each result is without reading the label, which the interface leans
-on. If `scenes/` is missing, everything falls back to the drawn version and the
+on. Sixteen of the items are the author's own images, including real screenshots
+and two real documents, and those do show their actual picture -- a drawing of
+a screenshot is a poor stand-in when a real one is available. `scenes/CREDITS.md`
+keeps them separate from the CC0 set, because their licensing is not verified.
+If `scenes/` is missing, everything falls back to the drawn version and the
 app still runs.
 
-**The library is seeded, and seeded honestly.** 164 items across 1998–2026,
+**The library is seeded, and seeded honestly.** 180 items across 1998–2026,
 carrying failures that came out of the research: two bills in different Augusts,
 an ID card, a recovery-codes screenshot, black-and-white childhood photos with
 no usable metadata, and a waterfall nobody wrote the location down for.
@@ -102,7 +106,7 @@ no usable metadata, and a waterfall nobody wrote the location down for.
 | `app.py` | the Streamlit interface |
 | `cues.py` | sentence to cues with confidences. Gemini + rule-based fallback |
 | `search.py` | scoring, the ambiguity check, narrowing questions, the near-miss loop |
-| `library.py` | the 164-item demo library |
+| `library.py` | the 180-item demo library |
 | `thumbs.py` | thumbnails: the CC0 photo if there is one, else drawn |
 | `scenes/` | the CC0 photos, plus `CREDITS.md` |
 | `tools/fetch_scenes.py` | refills `scenes/`. Run by hand, never by the app |
@@ -135,7 +139,7 @@ The free tier sleeps after inactivity, so open the link once before sharing it.
 
 ## Limits, stated plainly
 
-- A seeded 164-item library is not a real 75,000-item one. Ambiguity is rarer in
+- A seeded 180-item library is not a real 75,000-item one. Ambiguity is rarer in
   a small library, which flatters these results. This is on the risk slide.
 - Scoring is transparent keyword and metadata matching, not embeddings. That is
   deliberate for a prototype whose argument is about interaction rather than

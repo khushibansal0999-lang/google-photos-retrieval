@@ -259,9 +259,13 @@ def _variants(slug):
 
 
 def _scene(item):
-    """The committed photo for this item, or None to fall back to drawing."""
-    if item["kind"] != "photo":
-        return None
+    """The committed picture for this item, or None to fall back to drawing.
+
+    Any kind can have a real picture now, not just photos. The generic filler
+    documents and screenshots still have no file and so are still drawn, which
+    is what keeps the kind readable at a glance; but where a real screenshot or
+    a real scanned page exists, showing it beats showing a diagram of one.
+    """
     files = _variants(_slug(item["title"]))
     if not files:
         return None

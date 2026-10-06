@@ -234,6 +234,97 @@ _FILLER = [
      ["autumn", "leaves", "park", "trees", "green"], [""]),
 ]
 
+
+
+# --------------------------------------------------------------- supplied ---
+# The author's own images, added so the demo stops being entirely stock. They
+# carry the kinds the research actually cares about: seven screenshots and two
+# documents among them, because "I photographed it to remember it" is the
+# failure three of four interviewees named. Dates are spread across four years
+# so they sit among the filler rather than clumping at one end.
+_SUPPLIED = [
+    _i("u13", "2026-09-21", PHOTO,
+       'Record on the turntable',
+       "Record on the turntable. Added from the author's own library.",
+       tags=['vinyl', 'record', 'music', 'turntable', 'pink'],
+       setting="indoor", text='Сияй, чёрт возьми · All Of A Sudden', tod="evening"),
+    _i("u14", "2026-08-02", SHOT,
+       'Saved: hot girls work hard',
+       "Saved: hot girls work hard. Added from the author's own library.",
+       tags=['wallpaper', 'quote', 'saved', 'gingham', 'blue'],
+       setting="indoor", text='HOT GIRLS WORK HARD'),
+    _i("u15", "2026-06-14", SHOT,
+       'Saved: study board',
+       "Saved: study board. Added from the author's own library.",
+       tags=['collage', 'study', 'motivation', 'quote', 'pinterest'],
+       setting="indoor", text="Everything is hard, before it's easy"),
+    _i("u16", "2026-04-27", PHOTO,
+       'Pink record, close up',
+       "Pink record, close up. Added from the author's own library.",
+       tags=['vinyl', 'record', 'music', 'pink', 'turntable'],
+       setting="indoor", text='All Of A Sudden', tod="evening"),
+    _i("u17", "2026-02-08", SHOT,
+       'Screenshot of a tweet',
+       "Screenshot of a tweet. Added from the author's own library.",
+       tags=['twitter', 'social', 'feed', 'screenshot', 'browser'],
+       setting="indoor", text='Hiking High Dune · Montreal trends · Seinfeld'),
+    _i("u18", "2025-12-19", SHOT,
+       'Screenshot of a repo page',
+       "Screenshot of a repo page. Added from the author's own library.",
+       tags=['github', 'code', 'repo', 'screenshot', 'browser', 'work'],
+       setting="indoor", text='facebook / react · 134,638 stars'),
+    _i("u19", "2025-10-30", PHOTO,
+       'Playing the AR game on the street',
+       "Playing the AR game on the street. Added from the author's own library.",
+       tags=['game', 'phone', 'street', 'augmented reality', 'walk'],
+       setting="outdoor", tod="afternoon"),
+    _i("u20", "2025-09-11", PHOTO,
+       'Checking the chart at the desk',
+       "Checking the chart at the desk. Added from the author's own library.",
+       tags=['crypto', 'chart', 'phone', 'desk', 'finance', 'screens'],
+       setting="indoor", text='BTC-USD 63,198.00', tod="afternoon"),
+    _i("u21", "2025-07-23", DOC,
+       'Lecture slide on qubits',
+       "Lecture slide on qubits. Added from the author's own library.",
+       tags=['diagram', 'slide', 'quantum', 'study', 'notes', 'paperwork'],
+       setting="indoor", text='BIT · LINEAR · EXPONENTIAL · QUBIT · calculation'),
+    _i("u22", "2025-05-05", PHOTO,
+       'Laptop running the profiler',
+       "Laptop running the profiler. Added from the author's own library.",
+       tags=['laptop', 'code', 'work', 'desk', 'profiler'],
+       setting="indoor", text='Memory allocation · 63.23 MB', tod="afternoon"),
+    _i("u23", "2025-03-16", PHOTO,
+       'Laptop open on Slack',
+       "Laptop open on Slack. Added from the author's own library.",
+       tags=['slack', 'work', 'laptop', 'desk', 'glasses', 'messages'],
+       setting="indoor", text='#social-media · Acme Inc', tod="afternoon"),
+    _i("u24", "2024-12-27", SHOT,
+       "Saved: dreams don't work",
+       "Saved: dreams don't work. Added from the author's own library.",
+       tags=['wallpaper', 'quote', 'flowers', 'blue', 'saved'],
+       setting="indoor", text="dreams don't work unless you do"),
+    _i("u25", "2024-10-08", SHOT,
+       'Screenshot of the editor',
+       "Screenshot of the editor. Added from the author's own library.",
+       tags=['code', 'editor', 'screenshot', 'work', 'javascript'],
+       setting="indoor", text='Carousel.prototype · getItemForDirection', tod="night"),
+    _i("u26", "2024-07-19", DOC,
+       'Portfolio CV, one page',
+       "Portfolio CV, one page. Added from the author's own library.",
+       tags=['resume', 'cv', 'portfolio', 'design', 'paperwork', 'official'],
+       setting="indoor", text="Hello, I'm Han · Education · Experience · Technical skills"),
+    _i("u27", "2024-04-30", SHOT,
+       "Saved: what, like it's hard",
+       "Saved: what, like it's hard. Added from the author's own library.",
+       tags=['wallpaper', 'quote', 'pink', 'saved'],
+       setting="indoor", text="WHAT, LIKE IT'S Hard?"),
+    _i("u28", "2023-11-11", PHOTO,
+       'Castle under the moon',
+       "Castle under the moon. Added from the author's own library.",
+       tags=['art', 'wallpaper', 'moon', 'castle', 'night', 'fantasy'],
+       setting="outdoor", tod="night"),
+]
+
 _PEOPLE_CYCLE = [[], ["friends"], ["sister"], ["family"], ["friends", "sister"], []]
 
 
@@ -273,7 +364,7 @@ _CROWDS = ["nobody", "one other", "a few", "a crowd"]
 
 def load():
     """Every item, newest first — the order a photo app would show them in."""
-    items = PLANTED + _filler_items()
+    items = PLANTED + _SUPPLIED + _filler_items()
     for k, it in enumerate(items):
         if it["id"] in _TOD_CROWD:
             it["tod"], it["crowd"] = _TOD_CROWD[it["id"]]

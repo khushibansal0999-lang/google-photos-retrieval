@@ -1,8 +1,14 @@
 # Photo credits
 
-Every image here is CC0 (public domain dedication), found through
-[Openverse](https://openverse.org). CC0 asks for no attribution.
-These are listed anyway.
+Two groups, with different licences. Read the second heading before reusing
+anything from this folder.
+
+Regenerate with `python mvp/tools/fetch_scenes.py`.
+
+## Found through Openverse, CC0
+
+Public domain dedication: free to use, modify and redistribute, no attribution
+required. Listed anyway.
 
 Regenerate with `python mvp/tools/fetch_scenes.py`.
 
@@ -132,3 +138,30 @@ Regenerate with `python mvp/tools/fetch_scenes.py`.
 | Medicine strip | [Pills Medicine](https://stocksnap.io/photo/pills-medicine-TPI078T0IS) | Martin Vorel | CC0 |
 | Childhood photo, scanned | [Kids Bike](https://stocksnap.io/photo/kids-bike-TIDFS7VDFA) | Matt Bango | CC0 |
 | Childhood photo, birthday | [Events Birthday](https://stocksnap.io/photo/events-birthday-7XQHYBOHLC) | Freestocks.org | CC0 |
+
+## Supplied by the author
+
+Sixteen images from the author's own collection, added so the demo is not
+entirely stock. **Their provenance has not been verified and they are not
+CC0.** Several are clearly professional stock photography and several look
+like saved social-media images. They are here because the project's own
+author put them here; anyone reusing this repo should replace them.
+
+| file | kind | what it is |
+|---|---|---|
+| `record-on-the-turntable/0.jpg` | photo | Record on the turntable |
+| `saved-hot-girls-work-hard/0.jpg` | screenshot | Saved: hot girls work hard |
+| `saved-study-board/0.jpg` | screenshot | Saved: study board |
+| `pink-record-close-up/0.jpg` | photo | Pink record, close up |
+| `screenshot-of-a-tweet/0.jpg` | screenshot | Screenshot of a tweet |
+| `screenshot-of-a-repo-page/0.jpg` | screenshot | Screenshot of a repo page |
+| `playing-the-ar-game-on-the-street/0.jpg` | photo | Playing the AR game on the street |
+| `checking-the-chart-at-the-desk/0.jpg` | photo | Checking the chart at the desk |
+| `lecture-slide-on-qubits/0.jpg` | document | Lecture slide on qubits |
+| `laptop-running-the-profiler/0.jpg` | photo | Laptop running the profiler |
+| `laptop-open-on-slack/0.jpg` | photo | Laptop open on Slack |
+| `saved-dreams-don-t-work/0.jpg` | screenshot | Saved: dreams don't work |
+| `screenshot-of-the-editor/0.jpg` | screenshot | Screenshot of the editor |
+| `portfolio-cv-one-page/0.jpg` | document | Portfolio CV, one page |
+| `saved-what-like-it-s-hard/0.jpg` | screenshot | Saved: what, like it's hard |
+| `castle-under-the-moon/0.jpg` | photo | Castle under the moon |
