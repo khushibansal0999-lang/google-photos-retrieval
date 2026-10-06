@@ -93,7 +93,7 @@ PC_LABELS = {"vague_memory_retrieval": "Vague-memory retrieval (core)", "ui_navi
 SECTIONS = ["Overview", "Explore evidence", "Compare segments", "Ask the evidence", "How it works"]
 with st.sidebar:
     st.header("Section")
-    section = st.radio("Section", SECTIONS, label_visibility="collapsed")
+    section = st.radio("Section", SECTIONS, label_visibility="collapsed", key="section")
     st.divider()
     st.header("Scope")
     pc_choice = st.multiselect("Problem class", list(PC_LABELS), default=["vague_memory_retrieval"],
@@ -110,8 +110,32 @@ st.caption(
 )
 
 
+def _go_ask():
+    """Hand the typed question to the Ask section and switch to it.
+
+    This runs as an on_click callback because Streamlit will not let you write
+    to a widget's key after that widget has been drawn, and the section radio
+    is drawn in the sidebar before this button is reached.
+    """
+    st.session_state["ask_q"] = st.session_state.get("ask_home", "")
+    st.session_state["ask_go"] = True
+    st.session_state["section"] = "Ask the evidence"
+
+
 # ---------------------------------------------------------------- Overview
 if section == "Overview":
+    # The one thing a reviewer should not have to hunt for. Buried in the
+    # sidebar it looks like a dashboard, which is the thing the brief warns
+    # against; on the landing page it is obvious the evidence can be queried.
+    with st.container(border=True):
+        st.markdown("**Ask this evidence a question**  \n"
+                    "Gemini picks the slice of the 1,196 tagged records that answers it, "
+                    "then replies with real user quotes and the record IDs behind them.")
+        a, b = st.columns([5, 1])
+        a.text_input("Question", key="ask_home", label_visibility="collapsed",
+                     placeholder="What do people type when they cannot describe the photo?")
+        b.button("Ask  →", type="primary", use_container_width=True, on_click=_go_ask)
+
     c0, c1, c2, c3, c4 = st.columns(5)
     c0.metric("Records analysed", f"{len(df):,}")
     c2.metric("Retrieval-relevant", f"{len(rel_all):,}", f"{len(rel_all)/len(df):.0%} of total")
@@ -214,11 +238,15 @@ if section == "Ask the evidence":
                 "What do people type when they don't know how to describe the photo?",
                 "Which failure stage is most common for photos older than a year?",
                 "What workarounds do parents use to find kids' photos?"]
-    question = st.text_area("Question", placeholder=examples[0])
+    question = st.text_area("Question", placeholder=examples[0],
+                            value=st.session_state.pop("ask_q", ""))
     st.caption("Try: " + " · ".join(f"_{e}_" for e in examples))
     if not os.environ.get("GEMINI_API_KEY"):
         st.error("The AI answer step needs a Gemini API key. On Streamlit Cloud: **Manage app → Settings → Secrets** and add `GEMINI_API_KEY = \"your key\"`. The Overview/Explore/Compare sections work without it.")
-    if st.button("Ask", type="primary") and question.strip():
+    # "or" the handover flag in, so a question typed on the Overview page runs
+    # on one click rather than making the reader press Ask a second time.
+    go = st.button("Ask", type="primary") or st.session_state.pop("ask_go", False)
+    if go and question.strip():
         FILTER_SCHEMA = {
             "type": "object",
             "properties": {
