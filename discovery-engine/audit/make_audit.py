@@ -106,20 +106,50 @@ def write_sheet(picked):
     return SHEET
 
 
-def score():
-    """Count `Agree: yes` / `no` once the sheet has been filled in."""
-    if not SHEET.exists():
-        raise SystemExit("No audit_sample.md yet. Run without --score first.")
+XLSX = HERE / "audit_sample.xlsx"
+
+
+def _score_xlsx():
+    """Read column F of the spreadsheet. Returns None if it is not there."""
+    if not XLSX.exists():
+        return None
+    try:
+        from openpyxl import load_workbook
+    except ImportError:
+        print("(found audit_sample.xlsx but openpyxl is not installed; "
+              "pip install openpyxl)")
+        return None
+    ws = load_workbook(XLSX, data_only=True).active
     yes = no = blank = 0
-    for line in SHEET.read_text().splitlines():
-        if line.startswith("**Agree:**"):
-            v = line.split("**Agree:**", 1)[1].strip().strip("*").lower()
-            if v.startswith("y"):
-                yes += 1
-            elif v.startswith("n"):
-                no += 1
-            else:
-                blank += 1
+    for row in ws.iter_rows(min_row=3, max_row=ws.max_row, min_col=1, max_col=6):
+        if not isinstance(row[0].value, int):
+            break                       # past the twenty rows, into the totals
+        v = str(row[5].value or "").strip().lower()
+        yes += v.startswith("y")
+        no += v.startswith("n")
+        blank += not v
+    return yes, no, blank
+
+
+def score():
+    """Count the yes/no answers, from the spreadsheet if there is one."""
+    counts = _score_xlsx()
+    if counts is None:
+        if not SHEET.exists():
+            raise SystemExit("Nothing to score yet. Run without --score first.")
+        yes = no = blank = 0
+        for line in SHEET.read_text().splitlines():
+            if line.startswith("**Agree:**"):
+                v = line.split("**Agree:**", 1)[1].strip().strip("*").lower()
+                if v.startswith("y"):
+                    yes += 1
+                elif v.startswith("n"):
+                    no += 1
+                else:
+                    blank += 1
+    else:
+        yes, no, blank = counts
+        print(f"(read {XLSX.name})")
     done = yes + no
     print(f"agreed {yes}, disagreed {no}, not yet filled {blank}")
     if done:
