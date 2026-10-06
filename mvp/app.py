@@ -118,6 +118,7 @@ st.markdown("""
 S = st.session_state
 S.setdefault("q", "")
 S.setdefault("qbox", "")
+S.setdefault("shown", 24)   # how much of the library the home grid is showing
 S.setdefault("year", None)
 S.setdefault("narrow", None)
 S.setdefault("asked", [])       # dimensions already used, so we never repeat one
@@ -175,7 +176,9 @@ with e3:
 if not S.q.strip():
     st.divider()
     st.markdown("**Your photos**")
-    st.caption(f"{len(LIBRARY)} items, {LIBRARY[-1]['date'][:4]}–{LIBRARY[0]['date'][:4]}. "
+    shown = min(S.shown, len(LIBRARY))
+    st.caption(f"Showing {shown} of {len(LIBRARY)} items, "
+               f"{LIBRARY[-1]['date'][:4]}–{LIBRARY[0]['date'][:4]}. "
                "A demo library seeded with the retrieval failures that came out of the "
                "research, so the things that break here are things that broke for real people.")
     # One real CSS grid, not st.columns. Streamlit stacks columns below about
@@ -186,8 +189,27 @@ if not S.q.strip():
     cells = "".join(
         f'<figure class="g-cell"><img src="data:image/jpeg;base64,{thumbs.b64(it)}" '
         f'alt="{it["title"]}"><figcaption>{it["date"]}</figcaption></figure>'
-        for it in LIBRARY[:24])
+        for it in LIBRARY[:shown])
     st.markdown(f'<div class="grid">{cells}</div>', unsafe_allow_html=True)
+
+    # Paged, not all at once. Every thumbnail is inlined into the HTML as
+    # base64, so the whole library in one go is close to a megabyte before the
+    # page can paint -- and a tester already sat through ten seconds of spinner
+    # on a cold boot. Sixty at a time keeps the first paint cheap and still
+    # lets anyone walk the whole library.
+    if shown < len(LIBRARY):
+        left = len(LIBRARY) - shown
+        a, b, _ = st.columns([1.5, 1.5, 4])
+        if a.button(f"Show {min(60, left)} more", use_container_width=True):
+            S.shown = shown + 60
+            st.rerun()
+        if b.button(f"Show all {len(LIBRARY)}", use_container_width=True):
+            S.shown = len(LIBRARY)
+            st.rerun()
+    elif len(LIBRARY) > 24:
+        if st.button("Back to the top of the library"):
+            S.shown = 24
+            st.rerun()
     st.stop()
 
 # ------------------------------------------------------------------ search --
