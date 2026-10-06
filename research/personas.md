@@ -1,7 +1,7 @@
 # Personas — vague-memory photo retrieval
 
-**These are syntheses, not people.** Each one is assembled from four task-based
-interviews (P1–P4), a 31-person survey, and 84 genuine vague-memory failures
+**These are syntheses, not people.** Each one is assembled from five task-based
+interviews (P1–P5), a 31-person survey, and 84 genuine vague-memory failures
 pulled out of 1,196 tagged public posts. Every claim below carries its source.
 Nothing here is invented, and no persona is a stand-in for a single
 participant — where a line comes from one session, it says so.
@@ -118,13 +118,25 @@ the product can take.
 
 ## Two cautions a reviewer should know
 
-**These rest on four interviews, not twelve.** Three of the four are the basis
-for the paperwork finding; one of them (P1) was not primarily a Google Photos
+**These rest on five interviews, not twelve.** Four of the five named a document
+as their last real hassle; one of them (P1) was not primarily a Google Photos
 user, and his live retrieval happened in OneDrive. That session is evidence
 about photo retrieval generally, not about Google Photos specifically.
 
-**One hypothesis died here.** Multi-account fragmentation looked promising in
-the survey — one respondent raised it unprompted — and then failed three
-interviews in a row. P1, P2 and P3 all have multiple accounts; none reported a
-retrieval problem from it. It is out of the problem definition, on the evidence,
-rather than kept because it was interesting.
+**One hypothesis died and then came back.** Multi-account fragmentation looked
+promising in the survey, failed three interviews in a row — P1, P2 and P3 all
+have several accounts and none reported a retrieval problem — and was dropped.
+P5 then said plainly that not knowing which account a photo is in has made it
+harder to find. One data point either way, so it is back as an open question
+rather than a finding. The deck says exactly that.
+
+---
+
+## A late addition worth knowing
+
+P5 reported that Google Photos now groups documents into their own category, and
+reaches for it. That is a real mitigation shipping inside the product, and it
+narrows the paperwork gap this research argues from. It does not close it — P5's
+own last hassle was still a document, a month earlier — because the category
+helps you **browse** documents and still does nothing to help you say **which**
+document. Expect a reviewer to raise it.
